@@ -138,7 +138,6 @@ dmypy.json
 cython_debug/
 
 # custom
-venv
-.env
-env
+dataset
+dataset_demo
 dataset.zip
