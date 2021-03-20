@@ -1,7 +1,167 @@
 # 50.039-Deep-Learning
 For Module 50.039
 
-# How doctors diagnose infections based on x-rays. 
+Students:
+
+- Ong Xiang Qian - 1002646
+- Glenn Chia Jin Wee - 1003118
+
+# 1. Table of contents <a name="TOC"></a>
+
+1. [Table of contents](#TOC)
+2. [Directory structure](#DS)
+3. [Final files and instructions on running them](#INSTRUCTIONS)
+4. [Data analysis](#DA)
+5. [Proposed model and design](#MODEL)
+6. [Model Summary](#MODEL2)
+7. [Evaluation of results](#EVAL)
+8. [Challenges of predicting covid and non-covid](#CHALLENGE)
+9. [Critically evaluating desired model](#OVERALL)
+10. [How doctors evaluate covid](#DOCTORS)
+
+# 2. Directory structure <a name="DS"></a>
+
+```
+- notebooks
+  |_ colab
+    |_ boilerplate
+      |_ custom_dataset_dataloader_cascade.ipynb
+      |_ custom_dataset_dataloader.ipynb
+    |_ experiments
+    |_ final
+  |_ references
+    |_ custom_dataset_dataloader_demo.ipynb
+- instructions # contains the small project instructions 
+  |_ Small_Project_instructions.pdf
+README.md # contains the overview of the project and explanations for the different requirements
+```
+
+# 3. Final files and instructions on running them <a name="INSTRUCTIONS"></a>
+
+## 3.1 Training the final model
+
+## 3.2 Loading and testing the trained model
+
+# 4. Data analysis <a name="DA"></a>
+
+## 4.1 Custom Datasets and Dataloader
+
+### 4.1.1 Binary cascade problem
+
+### 4.1.2 Three-class problem
+
+## 4.2 Distribution of data among classes and analysis
+
+## 4.3 Data processing
+
+### 4.3.1 Typical processing operations
+
+### 4.3.2 Other potential pre-processing operations
+
+## 4.4 Possible data augmentations
+
+Reference link on how Doctors diagnose Covid-19: [The role of chest radiography in confirming covid-19 pneumonia](https://www.bmj.com/content/370/bmj.m2426#:~:text=Most%20people%20with%20covid%2D19,those%20with%20covid%2D19%20pneumonia.)
+
+Relevant insight:
+
+- "covid-19 pneumonia changes are mostly **bilateral on chest radiographs** (72.9%, 95% confidence interval 58.6 to 87.1) and have **ground glass opacity** in 68.5% of cases (95% CI 51.8 to 85.2)"
+- The paper provides several images and analyzes them. From the images, it seems that the target areas are in the 4 corners of the lungs, perhaps data augmentation can perform crops to those areas
+
+How it can be used in the model?
+
+- Problem: The data classes are imbalanced for covid and non-covid and that the model has more problems differentiating the 2 compared to differentiating normal and infected.
+  Solution: Since covid-19 is `bilateral` meaning that it affects both sides of the lungs at a high probability. Perhaps mirroring images could be a possible approach to increase the size of the dataset for covid images, giving the model a more balanced dataset and more covid images to recognize
+
+# 5. Proposed model <a name="MODEL"></a>
+
+## 5.1 3-class classifier vs 2 binary classifiers
+
+**<u>Differences between the 2 architectures</u>**
+
+**<u>Why we chose the 2 binary classifier approach</u>**
+
+## 5.2 2 2 Binary classifiers architecture design
+
+### 5.2.1 Referencing literature and traditional well-performing models
+
+<u>**Naïve single convolution model**</u>
+
+**<u>Re-implementing a scaled down version of resnet</u>**
+
+<u>**Models from literature that tackled similar problems**</u>
+
+### 5.2.2 Model parameters
+
+Layers, channels, kernel size
+
+### 5.2.3 Mini-batch size
+
+**<u>Recommendation by literature</u>**
+
+**<u>Experimenting with different batch-sizes</u>**
+
+### 5.2.4 Loss function
+
+<u>**Why cross-entropy loss?**</u>
+
+<u>**Experimenting with weighted cross-entropy to account for imbalanced classes**</u>
+
+## 5.3 Optimizer
+
+### 5.3.1 Optimizer selection
+
+<u>**Adam vs AdamW theory**</u>
+
+<u>**Adam vs AdamW empirical**</u>
+
+### 5.3.2 Regularization - Weight Decay
+
+### 5.3.3 Learning rate
+
+**<u>Recommendation by literature</u>**
+
+**<u>Experimenting with different learning rates</u>**
+
+### 5.3.4 Scheduled learning rate
+
+## 5.4 Model parameters
+
+**<u>Number of epochs</u>**
+
+## 5.5 Implementing checkpoints
+
+# 6. Model Summary <a name="MODEL2"></a>
+
+Recapitulation
+
+# 7. Evaluation <a name="EVAL"></a>
+
+## 7.1 Learning curves
+
+Loss vs epochs
+
+Accuracy vs epochs
+
+## 7.2 Key metrics and considerations
+
+<u>**Confusion matrix**</u>
+
+<u>**Recall and precision**</u>
+
+<u>**F1 score**</u>
+
+## 7.3 Accuracy and image diagrams
+
+## 7.4 Investigating failures with feature maps
+
+# 8. Challenges of predictions <a name="CHALLENGE"></a>
+
+## 8.1 Differentiating covid and non-covid
+
+# 9. Overall - what is the better model, accuracy vs low true negatives/false positives rates on certain classes <a name="OVERALL"></a>
+
+
+# 10. How doctors diagnose infections based on x-rays. <a name="DOCTORS"></a>
 
 Reference link: [How accurate is chest imaging for diagnosing COVID-19?](https://www.cochrane.org/CD013639/INFECTN_how-accurate-chest-imaging-diagnosing-covid-19)
 
@@ -48,7 +208,7 @@ Citation:
 ```
 
 
-# Common bug fixes
+# 11. Common bug fixes
 
 ## Bug fix 1
 
