@@ -1,6 +1,53 @@
 # 50.039-Deep-Learning
 For Module 50.039
 
+# How doctors diagnose infections based on x-rays. 
+
+Reference link: [How accurate is chest imaging for diagnosing COVID-19?](https://www.cochrane.org/CD013639/INFECTN_how-accurate-chest-imaging-diagnosing-covid-19)
+
+- Defines X-Rays as "X-rays (radiography) use radiation to produce a 2-D image"
+- This paper pooled results from several sources (if there were 4 or more results). For Chest X-rays, it found that the Chest X-ray "correctly diagnosed COVID-19 in 80.6% of the people who had COVID-19. However it incorrectly identified COVID-19 in 28.5% of the people who did not have COVID-19"
+
+Critical insight
+
+- It seems that classifications for X-rays have room for improvement, the numbers indicated above would provide a baseline for any model's performance
+
+Citation:
+
+> Islam N, Ebrahimzadeh S, Salameh J-P, Kazi S, Fabiano N, Treanor L, Absi M, Hallgrimson Z, Leeflang MMG, Hooft L, van der Pol CB, Prager R, Hare SS, Dennie C, Spijker R, Deeks JJ, Dinnes J, Jenniskens K, Korevaar DA, Cohen JF, Van den Bruel A, Takwoingi Y, van de Wijgert J, Damen JAAG, Wang J, McInnes MDF, Cochrane COVID-19 Diagnostic Test Accuracy Group. Thoracic imaging tests for the diagnosis of COVID-19. Cochrane Database of Systematic Reviews 2021, Issue 3. Art. No.: CD013639. DOI: 10.1002/14651858.CD013639.pub4.
+
+Reference link 2: [The role of chest radiography in confirming covid-19 pneumonia](https://www.bmj.com/content/370/bmj.m2426#:~:text=Most%20people%20with%20covid%2D19,those%20with%20covid%2D19%20pneumonia.)
+
+- "No single feature of covid-19 pneumonia on a chest radiograph is specific or diagnostic, but a combination of multifocal peripheral lung changes of ground glass opacity and/or consolidation, which are most commonly bilateral, may be present"
+- "Diagnosis might be complicated as covid-19 pneumonia may or may not be visible on chest radiograph"
+- "Most patients with covid-19 infection have a mild illness and do not develop pneumonia"
+- Diagnose
+  1. **"Like other pneumonias, covid-19 pneumonia causes the density of the lungs to increase**. This may be seen as **whiteness in the lungs** on radiography which, depending on the severity of the pneumonia, **obscures the lung markings** that are normally seen; however, this may be delayed in appearing or absent."
+  2. "Review the radiograph systematically, looking for abnormalities of the **heart, mediastinum, lungs, diaphragm, and ribs**,[9](https://www.bmj.com/content/370/bmj.m2426#ref-9) and remembering that radiographic changes of covid-19 pneumonia can be **subtle or absent**."
+  3. "covid-19 pneumonia changes are mostly **bilateral on chest radiographs** (72.9%, 95% confidence interval 58.6 to 87.1) and have **ground glass opacity** in 68.5% of cases (95% CI 51.8 to 85.2)"
+  4. "common manifestations and patterns of **lung abnormality** seen on portable chest radiography in covid-19 patients"
+- How it can be used in the model?
+  1. The paper provides several images and analyzes them. From the images, it seems that the target areas are in the 4 corners of the lungs, perhaps data augmentation can perform crops to those areas
+  2. In addition, covid-19 is "bilateral" meaning that it affects both sides of the lungs at a high probability. Perhaps mirroring images could be a possible approach to increase the size of the dataset.
+
+Citation:
+
+```bib
+@article {Cleverleym2426,
+	author = {Cleverley, Joanne and Piper, James and Jones, Melvyn M},
+	title = {The role of chest radiography in confirming covid-19 pneumonia},
+	volume = {370},
+	elocation-id = {m2426},
+	year = {2020},
+	doi = {10.1136/bmj.m2426},
+	publisher = {BMJ Publishing Group Ltd},
+	URL = {https://www.bmj.com/content/370/bmj.m2426},
+	eprint = {https://www.bmj.com/content/370/bmj.m2426.full.pdf},
+	journal = {BMJ}
+}
+```
+
+
 # Common bug fixes
 
 ## Bug fix 1
