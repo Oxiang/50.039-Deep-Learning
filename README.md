@@ -18,6 +18,7 @@ Students:
 8. [Challenges of predicting covid and non-covid](#CHALLENGE)
 9. [Critically evaluating desired model](#OVERALL)
 10. [How doctors evaluate covid](#DOCTORS)
+11. [References](#REF)
 
 # 2. Directory structure <a name="DS"></a>
 
@@ -52,13 +53,62 @@ README.md # contains the overview of the project and explanations for the differ
 
 ## 4.2 Distribution of data among classes and analysis
 
-## 4.3 Data processing
+<u>**Discuss whether or not the dataset is balanced between classes, uniformly distributed, etc.**</u>
 
-### 4.3.1 Typical processing operations
+**Training set**
 
-### 4.3.2 Other potential pre-processing operations
+The train data for the different classes are imbalanced. From the graph plotted below, the `infected_non_covid` class has significantly more data points than the other classes. Overall, the ratio `normal:infected_covid:infected_non_covid` is approximately `1:1:2`.
 
-## 4.4 Possible data augmentations
+This could present more complications if the model is trained in a stacking manner by first training normal vs infected. The ratio of `normal:infected` would be a ratio of `1:3` which is more imbalanced. However, if there are distinct differences in the data of the normal and infected then this large difference could be negated. Alternatively, data augmentation techniques could be used to increase the size of the training data for the `normal` class. Another possible workaround is to adjust the weights assigned to the different classes in the loss function.
+
+**Testing set**
+
+The test set is also slightly imbalanced with the ratio `normal:infected_covid:infected_non_covid` being approximately `2:1:2`. However, this is not as bad as an imbalanced training set because the test set will not only be used to get a gauge of the model's performance after each epoch and will not directly affect the model's parameter tuning.
+
+**Validation set**
+
+The val set is uniformly distributed between the three classes. However, it is glaring that there are only 8 validation samples for the 3 classes. However, this is acceptable as it is used only for validation and will not affect the model's parameter tuning.
+
+<u>**Overall class distribution**</u>
+
+<img src="assets/data_analysis/01_overall_class_dist.png" style="zoom:70%;" />
+
+<u>**Distribution for Layer 0 of the 2 binary classifier approach - normal vs infected**</u>
+
+The graph below gives a Clearer idea about the training imbalance where the ratio of `normal:infected` would be a ratio of `1:3` which are the ratios used when training the binary classifier for Layer 0.
+
+<img src="assets/data_analysis/02_layer_0_dist.png" style="zoom:70%;" />
+
+<u>**Distribution for Layer 1 of the 2 binary classifier approach - covid vs non_covid**</u>
+
+The class distribution for infected_covid vs infected_non_covid is imbalanced by about 1:2. This represents what is likely in reality. Covid is new and will probably not have as many data samples as the common infected non-covid X rays. Again, possible data augmentations techniques like mirroring could potentially be used to increase the number of training samples for covid.
+
+<img src="assets/data_analysis/03_layer_1_dist.png" style="zoom:70%;" />
+
+## 4.3 Why normalize the data
+
+To recap the normalization can be found in the `Lung_Dataset` class' `open_img` function which did the following normalization.
+
+```python
+# Convert to Numpy array and normalize pixel values by dividing by 255.
+im = np.asarray(Image.open(f))/255
+```
+
+Images have RGB ranges from 0-255. Considering various activation functions like `sigmoid` such a large range would mean that for vastly different values like 100 and 255, not much difference can be seen when passed into the `sigmoid` activation function. Both would produce a value that is close to 1.
+
+Taking the same values as reference, if we divide by 255, for a value of 100,  $\frac{100}{255}$ we get approximately 0.39. Then for a value of 255, $\frac{255}{255}$ we get 1. For the initial value of 100 that becomes 0.39 after the division, passing it into `sigmoid(0.39)` produces a value of 0.596. Meanwhile for the initial value of 255 that becomes 1 after division, passing it into `sigmoid(1)` produces a value of 0.731. This difference in value allows us to extract meaningful differences in the pixel values.
+
+## 4.4 Other potential pre-processing operations
+
+Form the plot below, which is based on the Training set for normal images as reference, it is evident that there are several differences in the photo dimensions and photo environment. 
+
+![](assets/data_analysis/04_pre_process.png)
+
+For example, comparing image_index 1 and image_index 28 there is a clear difference in the lighting, Image_index 28 is a lot brighter. One pre-processing step could be to use histogram normalization. There is a paper that recommends 14 possible normalization algorithms that can be performed (Leszczynski, 2010).
+
+Another example is comparing "skinny" images like image_index 1 and image_index 31 where there is significantly more dark backgrounds at the side compares to images like image_index 12. Perhaps a edge detection algorithm can be applied to just filter the relevant parts of the image which are the lungs.
+
+## 4.5 Possible data augmentations
 
 Reference link on how Doctors diagnose Covid-19: [The role of chest radiography in confirming covid-19 pneumonia](https://www.bmj.com/content/370/bmj.m2426#:~:text=Most%20people%20with%20covid%2D19,those%20with%20covid%2D19%20pneumonia.)
 
@@ -207,8 +257,11 @@ Citation:
 }
 ```
 
+# 11. References <a name="REF"></a>
 
-# 11. Common bug fixes
+Leszczynski, M. (2010). Image Preprocessing for Illumination Invariant Face Verification. Journal of telecommunications and information technology, 19-25.
+
+# 12. Common bug fixes
 
 ## Bug fix 1
 
