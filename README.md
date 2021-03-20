@@ -396,6 +396,15 @@ The results for loss and accuracy on the train and test set during training can 
 
 **<u>Experimenting with different learning rates</u>**
 
+To explore the effects of different learning rates, we have run the gridsearch experiments on 2 learning rates: 0.0001 (default), as well as 0.00001. We found that having a lower learning rate by a factor of 10 drastically decreases the final accuracy. One of the reason could be due to the slow convergence rate at learning rate of 0.00001. 
+
+Log file: layer_0_gridsearch.log
+
+| Epoch | Learning Rate | Gamma Value | L1 Lambda | Final Accuracy |
+| ----- | ------------- | ----------- | --------- | -------------- |
+| 10    | 0.0001        | 0.1         | 0.5       | 0.9431         |
+| 10    | 0.00001       | 0.1         | 0.5       | 0.8750         |
+
 ### 5.3.4 Scheduled learning rate
 
 Under the GridSearch folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [0.1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
@@ -404,16 +413,27 @@ The scheduled learning rate is effective in reducing the learning rate as the tr
 
 Log file: layer_0_gridsearch.log
 
-| Epoch | Learning Rate | Gamma Value | Final Accuracy |
-| ----- | ------------- | ----------- | -------------- |
-| 10    | 0.0001        | 0.1         | 0.9431         |
-| 10    | 0.0001        | 0.001       | 0.9352         |
+| Epoch | Learning Rate | Gamma Value | L1 Lambda | Final Accuracy |
+| ----- | ------------- | ----------- | --------- | -------------- |
+| 10    | 0.0001        | 0.1         | 0.5       | 0.9431         |
+| 10    | 0.0001        | 0.001       | 0.5       | 0.9352         |
 
 From the table, we can see that the the final accuracy of the model with gamma value of 0.001 is lower than the model with gamma value of 0.1. This could be due to the fact that the model converges slower at a lower learning rate. 
+
+**5.3.5 L1 Regularization - Lambda**
+
+| Epoch | Learning Rate | Gamma Value | L1 Lambda | Final Accuracy |
+| ----- | ------------- | ----------- | --------- | -------------- |
+| 10    | 0.0001        | 0.1         | 0.5       | 0.9431         |
+| 10    | 0.0001        | 0.1         | 0.01      | 0.9387         |
+
+L1 regularization is helps in feature selection by eliminating features that are not important and is helpful when the number of feature points are large in number. In the table, we can  see that a higher lambda of 0.5 has a higher final accuracy as compared to a lambda of 0.01. This could be are result of the L1 regularization removing trivial features. 
 
 ## 5.4 Model parameters
 
 **<u>Number of epochs</u>**
+
+Epoch was used as one of the GridSearch parameter to determine the effect of the hyperparameter on the model. In general, at epochs testing of [5, 10], with a general trend of higher accuracy at higher epochs. This could mean that there are still areas which the model could learn from the training dataset.
 
 ## 5.5 Implementing checkpoints
 
