@@ -539,7 +539,7 @@ Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 | 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
 | 10     | 0.0001        | 1               | 0            | AdamW     | 0.8125        | 0.9700            | 0.9375         |
 
-From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam in layer 0. However, this might be affected by the Dataloader random shuffle. We pick AdamW as the optimizer for layer 0. 
+From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam in layer 0. However, this might be affected by the Dataloader random shuffle. We pick AdamW as the optimizer for layer 0 for initial fine tuning. 
 
 ### 5.3.2 Regularization - Weight Decay
 
@@ -553,7 +553,7 @@ Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 | 10     | 0.0001        | 1               | 0.00001      | Adam      | 0.7870        | 0.9211            | 0.8125         |
 | 10     | 0.0001        | 1               | 0.01         | Adam      | 0.7729        | 0.9444            | 0.875          |
 
-With all other hyperparameters equal, it is found that both weight decay of 0.00001 and weight decay of 0.01 have a lower average precision and average recall than the weight decay of 0. However, one advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0.1 instead. 
+With all other hyperparameters equal, it is found that both weight decay of 0.00001 and weight decay of 0.01 have a lower average precision and average recall than the weight decay of 0. However, one advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0.1 instead for initial fine tuning. 
 
 ### 5.3.3 Learning rate
 
@@ -567,7 +567,7 @@ Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 | 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
 | 10     | 0.001         | 1               | 0            | Adam      | 0.7568        | 0.9063            | 0.9063         |
 
-From the experiment, we can see that both the average precision and average recall for learning rate 0.00001 and 0.001 are lower than learning rate of 0.0001. Since we prioritize precision and recall, we will choose learning rate of 0.0001
+From the experiment, we can see that both the average precision and average recall for learning rate 0.00001 and 0.001 are lower than learning rate of 0.0001. Since we prioritize precision and recall, we will choose learning rate of 0.0001 for initial fine tuning.
 
 ### 5.3.4 Scheduled learning rate
 
@@ -580,16 +580,16 @@ Under the hyperparameter folder, we have experimented with the scheduled learnin
 | 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
 | 10     | 0.0001        | 0.001           | 0            | Adam      | 0.7896        | 0.9444            | 0.875          |
 
-From the table, we can see that scheduler gamma of 1 (no decay) has better average precision and average recall. As such we will not be using scheduled learning rate in our model.
+From the table, we can see that scheduler gamma of 1 (no decay) has better average precision and average recall. As such we will not be using scheduled learning rate in our model for initial fine tuning.
 
 ## 5.4 Model parameters
 
-After fine-tuning to an even greater extend on top of our initial experiments, we have decided to pick the following parameters.
+After further fine-tuning to an even greater extend on top of our initial experimental values, we have decided to pick the following parameters.
 
 **Layer 0**
 
-- Number of Epochs: 10
-- Learning Rate: 0.0001
+- Number of Epochs: 5
+- Learning Rate: 0.001
 - Weight Decay: 0
 - Optimizer: AdamW
 - Learning Rate Scheduler: None
@@ -597,7 +597,7 @@ After fine-tuning to an even greater extend on top of our initial experiments, w
 **Layer 1**
 
 - Number of Epochs : 10
-- Learning Rate: 0.0001
+- Learning Rate: 0.001
 - Weight Decay: 0.00001
 - Optimizer: AdamW
 - Learning Rate Scheduler: None
@@ -626,27 +626,83 @@ Recapitulation
 
 Loss vs epochs
 
+**Layer 0**
+
+![](assets/final/layer_0_loss_epoch.png)
+
+**Layer 1**
+
+![](assets/final/layer_1_loss_epoch.png)
+
 Accuracy vs epochs
+
+**Layer 0**
+
+![](assets/final/layer_0_acc_epoch.png)
+
+**Layer 1**
+
+![](assets/final/layer_1_acc_epoch.png)
 
 ## 7.2 Key metrics and considerations
 
 <u>**Confusion matrix**</u>
 
-<u>**Recall and precision**</u>
+Combined Accuracy: 0.7916666666666666
 
-<u>**F1 score**</u>
+![](assets/final/confusion_matrix.png)
+
+<u>**Recall, Precision and F1 Score**</u>
+
+|           | Precision          | Recall | F1 Score           |
+| --------- | ------------------ | ------ | ------------------ |
+| COVID     | 0.6153846153846154 | 1.0    | 0.761904761904762  |
+| non-COVID | 1.0                | 0.5    | 0.6666666666666666 |
+| Normal    | 1.0                | 0.875  | 0.9333333333333333 |
 
 ## 7.3 Accuracy and image diagrams
 
+![](assets/final/diagram_1.png)
+
+![](assets/final/diagram_2.png)
+
+![](assets/final/diagram_3.png)
+
+![](assets/final/diagram_4.png)
+
 ## 7.4 Investigating failures with feature maps
+
+![](assets/final/misclassified_1.png)
+
+The validation image above (normal) was misclassified as an infected-COVID. We can see from above that the misclassified image has very similar feature map as a correctly classified infected-COVID image. From here, we can deduce that any feature maps that have close resemblance to the respective classes' feature map will most likely to be classified under that particular class.
+
+![](assets/final/classified_1.png)
 
 # 8. Challenges of predictions <a name="CHALLENGE"></a>
 
 ## 8.1 Differentiating covid and non-covid
 
-
+One of the toughest problem for differentiating COVID vs non-COVID was to determine the best architecture to use for this classification task. In this case, we had to choose either the 3-class classification or the binary classification approach. Besides the theocratical knowledge, it was not clear which model was best suited in this case. Since both are logical in terms of classifying, there was a need to conduct experiments to explore the advantages and disadvantages pertaining to each architecture. 
 
 # 9. Overall - what is the better model, accuracy vs low true negatives/false positives rates on certain classes <a name="OVERALL"></a>
+
+Precision = $\frac{tp}{tp + fp}$
+
+Recall (also Sensitivity) = $\frac{tp}{tp + fn}$
+
+Specificity = $\frac{tn}{tn + fp}$
+
+For this project, the metrics can be applied differently considering the needs of different stakeholders.
+
+**Considering Covid, we cite 2 stakeholders who could have different concerns**
+
+For example, the general public could be concerned about the spread of the virus, hence, they could be more worried about Recall because false negatives could mean that people with the virus in the public space and mingling with others.
+
+On the other hand, the clinicans could be more concerned about Precision. This is because there are limited hospital beds and it would be a waste of resources to allocated scarce resource to people who do not have covid but were predicted to have covid. This can be a problem if there is a model that predicts everyone to have covid. While this model successfully identifies all covid cases, there will be a lot of people who do not actually have covid being admitted to the hospitals for tratement. This puts a strain on resources.
+
+Similarly, they would be interested in high specificity which is the percentage of people who are predicted negative among all the predicitions cases who are truly negative. A higher value for this would similarly reduce the strain of hospital resources as it implies that those who really do not have covid are likely predicted as not having covid and will not need treatment.
+
+For the analysis below we focus on `recall` as there was a time when the world was focused on containing the spread of covid which is aligned with the saying that "prevention is better than cure". We also output `precision` and the `f1` score to consider that other stakeholders are important as well.
 
 
 # 10. How doctors diagnose infections based on x-rays. <a name="DOCTORS"></a>
