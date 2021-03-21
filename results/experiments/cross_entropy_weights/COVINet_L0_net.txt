@@ -1,0 +1,6 @@
+Epoch: 1/6 - 21/03/2021 07:48:51 - Training Loss: 0.4001 - Training Accuracy: 0.8223 - Test Loss: 0.6238 - Test Accuracy: 0.7438
+Epoch: 2/6 - 21/03/2021 07:48:56 - Training Loss: 0.1877 - Training Accuracy: 0.9296 - Test Loss: 0.7656 - Test Accuracy: 0.7542
+Epoch: 3/6 - 21/03/2021 07:49:01 - Training Loss: 0.1557 - Training Accuracy: 0.9477 - Test Loss: 0.5847 - Test Accuracy: 0.7698
+Epoch: 4/6 - 21/03/2021 07:49:06 - Training Loss: 0.1435 - Training Accuracy: 0.9503 - Test Loss: 0.4930 - Test Accuracy: 0.8151
+Epoch: 5/6 - 21/03/2021 07:49:11 - Training Loss: 0.1210 - Training Accuracy: 0.9584 - Test Loss: 0.8983 - Test Accuracy: 0.7458
+Epoch: 6/6 - 21/03/2021 07:49:17 - Training Loss: 0.1077 - Training Accuracy: 0.9636 - Test Loss: 0.6847 - Test Accuracy: 0.8156

@@ -322,11 +322,51 @@ The results for loss and accuracy on the train and test set during training can 
 
 - `./results/experiments/batch_size/COVINet_L0_net_64.txt`
 - `./results/experiments/batch_size/COVINet_L1_net_64.txt`
+
 ### 5.2.4 Loss function
 
 <u>**Why cross-entropy loss?**</u>
 
+We used cross-entropy loss when we were experimenting with the 3 class classifier as cross entropy loss is ideal for multi-class networks. We decided to thus preserve the code across to the 2 x binary classifier model. Cross entropy loss also allows us to set weights on the different classes to account for their class imbalances. For example, for the first binary classifier for normal:infected, the ratio is about 1:2.88. To account for this, we can set the same ratios using the following line:
+
+```python
+l0_class_weights = torch.tensor([2.88, 1.0]).to(torch.device(device))
+criterion = nn.CrossEntropyLoss(l0_class_weights)
+```
+
 <u>**Experimenting with weighted cross-entropy to account for imbalanced classes**</u>
+
+The ratios of the classes are as follows
+
+- Normal:infected = 1341:3875 = approx 1:2.88
+- covid:non_covid = 1345:2530 = approx 1:1.88
+
+For normal:infected, it makes sense to favor the infected case a bit more in predictions since it is safer to misclasify a normal person as an infected person rather than an infected person as a normal person. In the latter case, this is dangerous for the public as that person may spread the infection to other people. Hence, the weights chosen are 2.83:1
+
+For covid:non_covid, we favor covid since covid is more deadly than non_covid infections. Hence, we choose a 1.9:1 ratio for the weighs
+
+While experimenting, the epoch counts were tweaked to ensure optimum performance.
+
+**<u>Results</u>**
+
+Accuracy on validation set: 17/24 (70.8%)
+
+Confusion Matrix:
+
+![](assets/proposed_model/08b_confusion_matrix.png)
+
+Relevant metrics on validation set:
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.87   | 1.0   | 0.25      |
+| Precision | 0.87   | 0.57  | 1.00      |
+| f1_score  | 0.87   | 0.72  | 0.40      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/cross_entropy_weights/COVINet_L0_net.txt`
+- `./results/experiments/cross_entropy_weights/COVINet_L1_net.txt`
 
 ## 5.3 Optimizer
 
