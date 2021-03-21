@@ -1,4 +1,7 @@
 # 50.039-Deep-Learning
+
+GitHub Link: https://github.com/Oxiang/50.039-Deep-Learning/tree/main
+
 For Module 50.039
 
 Students:
