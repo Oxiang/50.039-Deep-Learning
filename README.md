@@ -47,9 +47,15 @@ README.md # contains the overview of the project and explanations for the differ
 
 ## 4.1 Custom Datasets and Dataloader
 
+The custom dataset requires two core methods to work: __len__ and __getitem__. For __len__ method, it simply returns the total size of the datasets. As for __getitem__, it will match the index provided to the size of each classes in the dataset and tweak the path and final index to retrieve the image from the targeted folder.
+
 ### 4.1.1 Binary cascade problem
 
+The dataset class in the binary cascade problem is split into 2 separate classes, L0_Lung_Dataset and L1_Lung_Dataset. The L0_Lung_Dataset class is used to provide images and labels of normal vs infected datasets. L1_Lung_Dataset on the other hand is used to provide images and labels of infected COVID and infected non-COVID. 
+
 ### 4.1.2 Three-class problem
+
+For the three-class dataset, it is much simpler. The Lung_Dataset class is used to provide images and labels for normal, infected COVID and infected non-COVID. 
 
 ## 4.2 Distribution of data among classes and analysis
 
