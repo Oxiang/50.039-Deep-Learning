@@ -160,22 +160,18 @@ How it can be used in the model?
 
 **<u>Differences between the 2 architectures</u>**
 
-The first architecture is built on top of two binary classifiers. In this project, the top layer will classify normal vs infected x-rays and subsequent layer will classify COVID vs non-COVID x-rays. This approach is advantageous as each models are able to learnt distinct features that are catered towards their primary target. At the same time, each model is able to fully utilize the complementary datasets (e.g. infected COVID and infected non-COVID can be considered as infected) which could improve the accuracy of the models. 
+The first architecture is built on top of two binary classifiers. In this project, the top layer will classify normal vs infected x-rays and subsequent layer will classify COVID vs non-COVID x-rays. This approach is advantageous as each models are able to learn distinct features that are catered towards their primary target. At the same time, each model is able to fully utilize the complementary datasets (e.g. infected COVID and infected non-COVID can be considered as infected) which could improve the accuracy of the models. 
 
 The seconds architecture is a three class classifier. It classifies the x-rays according to normal, infected COVID and infected non-COVID cases. With this architecture, the overall classification is reliant on only one model which reduces the training time and tuning parameters. 
 
 **<u>Why we chose the 2 binary classifier approach</u>**
 
-<<<<<<< HEAD
 ## 5.2 2 Binary classifiers architecture design
-=======
 As the number of dataset is generally low, using the first architecture, 2 binary classifier, would allow us to tap onto complementary datasets to train each of the models. Furthermore, having two layers will allow the flexibility to tune individual hyperparameter to improve the overall accuracy for that specific model.
 
 On the hindsight, it is unclear if the architecture is truly the best option to take. As such, we will be doing an exploratory analysis using both models and evaluating their effectiveness. 
 
 ## 5.2 2 2 Binary classifiers architecture design
->>>>>>> 90a82dc... readme: updated proposed model and scheduled learning rate answers
-
 ### 5.2.1 Referencing literature and traditional well-performing models
 
 Methodology
