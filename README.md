@@ -640,21 +640,21 @@ Loss vs epochs
 
 **Layer 0**
 
-![](assets/final/layer_0_loss_epoch.png)
+![](assets/final/layer_0_loss_epoch.PNG)
 
 **Layer 1**
 
-![](assets/final/layer_1_loss_epoch.png)
+![](assets/final/layer_1_loss_epoch.PNG)
 
 Accuracy vs epochs
 
 **Layer 0**
 
-![](assets/final/layer_0_acc_epoch.png)
+![](assets/final/layer_0_acc_epoch.PNG)
 
 **Layer 1**
 
-![](assets/final/layer_1_acc_epoch.png)
+![](assets/final/layer_1_acc_epoch.PNG)
 
 ## 7.2 Key metrics and considerations
 
@@ -662,7 +662,7 @@ Accuracy vs epochs
 
 Combined Accuracy: 0.7916666666666666
 
-![](assets/final/confusion_matrix.png)
+![](assets/final/confusion_matrix.PNG)
 
 <u>**Recall, Precision and F1 Score**</u>
 
@@ -674,21 +674,21 @@ Combined Accuracy: 0.7916666666666666
 
 ## 7.3 Accuracy and image diagrams
 
-![](assets/final/diagram_1.png)
+![](assets/final/diagram_1.PNG)
 
-![](assets/final/diagram_2.png)
+![](assets/final/diagram_2.PNG)
 
-![](assets/final/diagram_3.png)
+![](assets/final/diagram_3.PNG)
 
-![](assets/final/diagram_4.png)
+![](assets/final/diagram_4.PNG)
 
 ## 7.4 Investigating failures with feature maps
 
-![](assets/final/misclassified_1.png)
+![](assets/final/misclassified_1.PNG)
 
 The validation image above (normal) was misclassified as an infected-COVID. We can see from above that the misclassified image has very similar feature map as a correctly classified infected-COVID image. From here, we can deduce that any feature maps that have close resemblance to the respective classes' feature map will most likely to be classified under that particular class.
 
-![](assets/final/classified_1.png)
+![](assets/final/classified_1.PNG)
 
 # 8. Challenges of predictions <a name="CHALLENGE"></a>
 
