@@ -532,20 +532,20 @@ Experimentally, AdamW should yield better training loss and that the models gene
 
 <u>**Adam vs AdamW empirical**</u>
 
-Log: results/experiments/tuning_layer_0_hyperparameters.log
+Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
 | Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
 | ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
 | 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
 | 10     | 0.0001        | 1               | 0            | AdamW     | 0.8125        | 0.9700            | 0.9375         |
 
-From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam. However, this might be affected by the Dataloader random shuffle. We pick AdamW as the optimizer. 
+From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam in layer 0. However, this might be affected by the Dataloader random shuffle. We pick AdamW as the optimizer for layer 0. 
 
 ### 5.3.2 Regularization - Weight Decay
 
 The weight decay parameter is used as a L2 regularization in the Adam optimizer. L2 regularization is used to alleviate overfitting of the model. 
 
-Log: results/experiments/tuning_layer_0_hyperparameters.log
+Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
 | Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
 | ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
@@ -553,15 +553,13 @@ Log: results/experiments/tuning_layer_0_hyperparameters.log
 | 10     | 0.0001        | 1               | 0.00001      | Adam      | 0.7870        | 0.9211            | 0.8125         |
 | 10     | 0.0001        | 1               | 0.01         | Adam      | 0.7729        | 0.9444            | 0.875          |
 
-With all other hyperparameters equal, it is found that both weight decay of 0.00001 and weight decay of 0.01 have a lower average precision and average recall than the weight decay of 0. However, one advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0. 
+With all other hyperparameters equal, it is found that both weight decay of 0.00001 and weight decay of 0.01 have a lower average precision and average recall than the weight decay of 0. However, one advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0.1 instead. 
 
 ### 5.3.3 Learning rate
 
 **<u>Experimenting with different learning rates</u>**
 
-Log: results/experiments/tuning_layer_0_hyperparameters.log
-
-Log file: layer_0_gridsearch.log
+Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
 | Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
 | ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
@@ -573,7 +571,7 @@ From the experiment, we can see that both the average precision and average reca
 
 ### 5.3.4 Scheduled learning rate
 
-Log: results/experiments/tuning_layer_0_hyperparameters.log
+Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
 Under the hyperparameter folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
 
@@ -590,15 +588,15 @@ After fine-tuning to an even greater extend on top of our initial experiments, w
 
 **Layer 0**
 
-- Number of Epochs: 5
+- Number of Epochs: 10
 - Learning Rate: 0.0001
-- Weight Decay: 0.00001
+- Weight Decay: 0
 - Optimizer: AdamW
 - Learning Rate Scheduler: None
 
 **Layer 1**
 
-- Number of Epochs : 35
+- Number of Epochs : 10
 - Learning Rate: 0.0001
 - Weight Decay: 0.00001
 - Optimizer: AdamW
@@ -645,6 +643,8 @@ Accuracy vs epochs
 # 8. Challenges of predictions <a name="CHALLENGE"></a>
 
 ## 8.1 Differentiating covid and non-covid
+
+
 
 # 9. Overall - what is the better model, accuracy vs low true negatives/false positives rates on certain classes <a name="OVERALL"></a>
 
