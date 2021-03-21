@@ -199,7 +199,7 @@ The results for loss and accuracy on the train and test set during training can 
 
 **Result for 2 x binary classifiers:**
 
-Accuracy: 14/24 (58.3%)
+Accuracy: 15/24 (62.5%)
 
 Confusion matrix:
 
@@ -207,9 +207,9 @@ Confusion matrix:
 
 |           | Normal | Covid | Non-covid |
 | --------- | ------ | ----- | --------- |
-| Recall    | 0.62   | 0.87  | 0.25      |
-| Precision | 1.00   | 0.46  | 0.50      |
-| f1_score  | 0.76   | 0.60  | 0.33      |
+| Recall    | 0.87   | 0.75  | 0.25      |
+| Precision | 0.87   | 0.50  | 0.50      |
+| f1_score  | 0.87   | 0.60  | 0.33      |
 
 The results for loss and accuracy on the train and test set during training can be found at
 
@@ -240,7 +240,7 @@ The naïve single convolution model was the model provided in the starter notebo
 
 Result:
 
-Accuracy: 14/24 (58.3%)
+Accuracy: 15/24 (62.5%)
 
 Confusion matrix:
 
@@ -248,9 +248,9 @@ Confusion matrix:
 
 |           | Normal | Covid | Non-covid |
 | --------- | ------ | ----- | --------- |
-| Recall    | 0.62   | 0.87  | 0.25      |
-| Precision | 1.00   | 0.46  | 0.50      |
-| f1_score  | 0.76   | 0.60  | 0.33      |
+| Recall    | 0.87   | 0.75  | 0.25      |
+| Precision | 0.87   | 0.50  | 0.50      |
+| f1_score  | 0.87   | 0.60  | 0.33      |
 
 The results for loss and accuracy on the train and test set during training can be found at
 
@@ -263,7 +263,7 @@ The architecture for this model was motivated by resnet. In terms of number of c
 
 ![](assets/proposed_model/04a_archi.png)
 
-Result: 15/24 (62.5%)
+Result: 12/24 (50%)
 
 Accuracy on validation set: 
 
@@ -275,9 +275,11 @@ Relevant metrics on validation set:
 
 |           | Normal | Covid | Non-covid |
 | --------- | ------ | ----- | --------- |
-| Recall    | 0.75   | 1.00  | 0.12      |
-| Precision | 0.85   | 0.50  | 1.00      |
-| f1_score  | 0.79   | 0.66  | 0.22      |
+| Recall    | 0.50   | 1.00  | 0.00      |
+| Precision | 1.00   | 0.40  | 0.00      |
+| f1_score  | 0.66   | 0.57  | 0.00      |
+
+Very clearly this model is not suitable because all the infected predictions are just classified as covid. In real life if this were to happen, there would be a severe strain on medical resources and facilities.
 
 The results for loss and accuracy on the train and test set during training can be found at
 
@@ -302,9 +304,9 @@ Relevant metrics on validation set:
 
 |           | Normal | Covid | Non-covid |
 | --------- | ------ | ----- | --------- |
-| Recall    | 0.62   | 1.00  | 0.375     |
-| Precision | 1.00   | 0.57  | 0.60      |
-| f1_score  | 0.76   | 0.72  | 0.46      |
+| Recall    | 0.62   | 0.875 | 0.50      |
+| Precision | 1.00   | 0.58  | 0.57      |
+| f1_score  | 0.76   | 0.70  | 0.53      |
 
 The results for loss and accuracy on the train and test set during training can be found at
 
@@ -321,23 +323,61 @@ The architecture was motivated by the following paper: [COVINet: a convolutional
 
 ![](assets/proposed_model/05a_archi.png)
 
+```python
+class L1_Net(nn.Module):
+    def __init__(self, num_layers=1):
+        super(L1_Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 8, 3, 1)
+        self.dropout1 = nn.Dropout2d(0.2)
+        self.relu = nn.ReLU()
+        self.conv2 = nn.Conv2d(8, 16, 3, 1)
+        self.conv3 = nn.Conv2d(16, 32, 3, 1)
+        self.avgpool = nn.AvgPool2d(3,3)
+        self.maxpool = nn.MaxPool2d(2, stride=2)
+        self.fc1 = nn.Linear(16928, 2)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.dropout1(x)
+        x = self.relu(x)
+        x = self.conv2(x)
+        x = self.relu(x)
+        x = self.maxpool(x)
+        x = self.dropout1(x)
+        x = self.conv3(x)
+        x = self.relu(x)
+        x = self.avgpool(x)
+        x = self.dropout1(x)
+        x = self.relu(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        output = F.log_softmax(x, dim = 1)
+        return output
+```
+
 **<u>Convolution layers</u>**
 
 One of the approaches to designing Convolution layers is to stack convolution layers as mentioned in class. The initial convolution layers will learn the low level features of the images. Subsequent layers can interpret these extracted features and could have a deeper feature representation.
 
 The original model proposed by the paper uses 1->16->128->256 transitions between convolution layers. This has a large number of parameters which makes sense for their problem because their dataset consists of 10,000 images. In this problem, the dataset we are using only has about 5854 images. Hence, having a smaller output size and thus lesser parameters would likely reduce the likelihood of overfitting.
 
+In terms of kernel size, the standard 3x3 kernel is used. The stride is set as 1 as recommended by the paper.
+
 **<u>Dropout layers</u>**
 
-Dropout means that at training time, we randomly set 1-p of all neurons to 0. This is a way of adding noise to the learning problem. For instance, if there is a certain pattern that consistently occurs in the training data but not in any other dataset, then setting the neurons that identify this pattern to 0 will allow the model to forget these training set specific patterns. This can help to model to generalize better to reduce the likelihood of overfitting.
+Dropout means that at training time, we randomly set 1-p of all neurons to 0. This is a way of adding noise to the learning problem. For instance, if there is a certain pattern that consistently occurs in the training data but not in any other dataset, then setting the neurons that identify this pattern to 0 will allow the model to forget these training set specific patterns. This can help to model to generalize better to reduce the likelihood of overfitting. For this model the paper recommended setting the `p` value as `0.2` which means that the probability of a neuron to be zeroed is 0.2.
 
 **<u>Relu layers</u>**
 
-Relu layers help to overcome the vanishing gradient problem. Relu ouputs a true 0 value for values <= 0. This true 0 values are known as a spare representation and can help speed up learning and simplify the model. For values >0, they are output in a  linear fashion. Gradients thus remain proportional to node activations and help to prevent vanishing gradients.
+Relu layers help to overcome the vanishing gradient problem. Relu outputs a true 0 value for values <= 0. This true 0 values are known as a spare representation and can help speed up learning and simplify the model. For values >0, they are output in a  linear fashion. Gradients thus remain proportional to node activations and help to prevent vanishing gradients.
 
 **<u>Pooling layers</u>**
 
+Pooling has no parameters to learn and it serves to aggregate parameters at each "window" where the kernel slides. This is faster than convolutions because pooling layers have no parameters to learn. There is also argument that max pooling helps to extract the sharpest images from an image. In the case of covid images, some parts of the lungs are identified. According to Cleverly et al. (2020), doctors look out for abnormalities in the **heart, mediastinum, lungs, diaphragm, and ribs** for x-rays. Perhaps these could result in sharp features that are picked up by the pooling layers.
 
+For the average pooling the standard kernel size of 3 is used. The stride used is 3 as recommended in the paper. Perhaps this is to capture more independent, non overlapping windows. This ensures that each output is not so dependent on the adjacent windows.
+
+Similarly for max pooling the same logic is applied except for a smaller kernel size as recommended by the paper.
 
 **<u>Linear layers</u>**
 
@@ -369,6 +409,8 @@ Since the dataset is small, we will experiment with `16,32,64`
 
 <u>**Batch size of 16:**</u>
 
+The notebook for this experiment can be found at `./notebooks/colab/experiments/batch_size/COVINet_classifier.ipynb`. This notebook is configured to test batch size 16.
+
 Result:
 
 Accuracy on validation set: 16/24 (66.7%)
@@ -392,6 +434,8 @@ The results for loss and accuracy on the train and test set during training can 
 
 <u>**Batch size of 64:**</u>
 
+The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/COVINet_classifier.ipynb`, just edit the batch size to 64.
+
 Result:
 
 Accuracy on validation set: 12/24 (50.0%)
@@ -413,6 +457,10 @@ The results for loss and accuracy on the train and test set during training can 
 - `./results/experiments/batch_size/COVINet_L0_net_64.txt`
 - `./results/experiments/batch_size/COVINet_L1_net_64.txt`
 
+**<u>Overall</u>**
+
+In terms of model performance, batch_size 16 and 32 do not make any difference. batch_size 64 results in a poorer model. Hence batch_size 32 is eventually chosen moving forward because it is the more common batch_size and also because it can result in faster training without much tradeoff in terms of model performance.
+
 ### 5.2.4 Loss function
 
 <u>**Why cross-entropy loss?**</u>
@@ -431,7 +479,7 @@ The ratios of the classes are as follows
 - Normal:infected = 1341:3875 = approx 1:2.88
 - covid:non_covid = 1345:2530 = approx 1:1.88
 
-For normal:infected, it makes sense to favor the infected case a bit more in predictions since it is safer to misclasify a normal person as an infected person rather than an infected person as a normal person. In the latter case, this is dangerous for the public as that person may spread the infection to other people. Hence, the weights chosen are 2.83:1
+For normal:infected, it makes sense to favor the infected case a bit more in predictions since it is safer to misclassify a normal person as an infected person rather than an infected person as a normal person. In the latter case, this is dangerous for the public as that person may spread the infection to other people. Hence, the weights chosen are 2.83:1
 
 For covid:non_covid, we favor covid since covid is more deadly than non_covid infections. Hence, we choose a 1.9:1 ratio for the weighs
 
@@ -457,6 +505,8 @@ The results for loss and accuracy on the train and test set during training can 
 
 - `./results/experiments/cross_entropy_weights/COVINet_L0_net.txt`
 - `./results/experiments/cross_entropy_weights/COVINet_L1_net.txt`
+
+There is slight improvement once the weights are added. Hence, these weights will be used in the final model once the optimizers and learning rates have been optimized
 
 ## 5.3 Optimizer
 
