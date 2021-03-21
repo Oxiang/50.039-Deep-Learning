@@ -130,15 +130,85 @@ How it can be used in the model?
 
 **<u>Why we chose the 2 binary classifier approach</u>**
 
-## 5.2 2 2 Binary classifiers architecture design
+## 5.2 2 Binary classifiers architecture design
 
 ### 5.2.1 Referencing literature and traditional well-performing models
 
+Methodology
+
+- There are many possible models to select from. To simplify the model selection process, we reference literature that propose novel architectures that solved similar problems.
+- To benchmark the custom models, we also experimented using the naïve single convolution model provided in the starter notebook
+- For a more robust benchmark, we modified the resnet architecture, using only a single layer of resnet for the experiments. The rationale was that the dataset was rather small and having too many layers would probably not work as well as they will likely overfit on the training data and this eventually results in poor performance for the Validation data. We chose resnet because it has generally performed well on image classification problems. For example, a paper by Talo, M. uses resnet's [Convolutional Neural Networks for Multi-class Histopathology Image Classification](https://arxiv.org/ftp/arxiv/papers/1903/1903.10035.pdf) and has achieved decent performance for the metrics they chose
+- Finally, the custom network chosen was based of the paper [COVINet: a convolutional neural network approach for predicting COVID-19 from chest X-ray images](https://link.springer.com/article/10.1007/s12652-021-02917-3#Sec9). The model proposed was tested on different number of classes, and has achieved a high accuracy.
+- To test the performance of these models, we use defaults for the optimizer, learning rate, and set a reasonable number of epochs at 15 per classifier.
+
 <u>**Naïve single convolution model**</u>
+
+The naïve single convolution model was the model provided in the starter notebook. The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/naive_classifier.ipynb`
+
+![](assets/proposed_model/03a_archi.png)
+
+Result:
+
+Accuracy: 15/24 (62.5%)
+
+Confusion matrix:
+
+![](assets/proposed_model/03b_confusion_matrix.png)
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.75   | 0.87  | 0.25      |
+| Precision | 1.00   | 0.53  | 0.40      |
+| f1_score  | 0.85   | 0.66  | 0.30      |
 
 **<u>Re-implementing a scaled down version of resnet</u>**
 
-<u>**Models from literature that tackled similar problems**</u>
+The architecture for this model was motivated by resnet. In terms of number of channels, kernel size, stride and padding, the single layer mimics the resnet architecture. A single layer was chosen because the dataset provided is small and a full resnet implementation will likely overfit on the data. The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/resnet_classifier.ipynb`
+
+![](assets/proposed_model/04a_archi.png)
+
+Result: 16/24 (66.7%)
+
+Accuracy on validation set: 
+
+Confusion matrix
+
+![](assets/proposed_model/04b_confusion_matrix.png)
+
+Relevant metrics on validation set:
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 1.00   | 0.50  | 0.50      |
+| Precision | 0.88   | 0.57  | 0.50      |
+| f1_score  | 0.94   | 0.53  | 0.50      |
+
+<u>**Models from literature that tackled similar problems - COVINet**</u>
+
+The architecture for this model was motivated from the following paper: [COVINet: a convolutional neural network approach for predicting COVID-19 from chest X-ray images](https://link.springer.com/article/10.1007/s12652-021-02917-3#Sec9). This model performed the best among the models. From the architecture, it is around the same complexity as the modified resnet but it has more layers than the naïve classifier. The increase in number of convolution layers means that lower layers can learn lower level features and subsequent layers the higher level features. Dropout layers at different parts of the architecture also help to reduce overfitting. The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/COVINet_classifier.ipynb`
+
+![](assets/proposed_model/05a_archi.png)
+
+Result:
+
+Accuracy on validation set: 17/24 (70.8%)
+
+Confusion matrix
+
+![](assets/proposed_model/05b_confusion_matrix.png)
+
+Relevant metrics on validation set:
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.75   | 0.87  | 0.50      |
+| Precision | 1.00   | 0.58  | 0.66      |
+| f1_score  | 0.85   | 0.70  | 0.57      |
+
+**<u>Conclusion</u>**
+
+Overall it is evident that the custom COVIN model that was specifically designed for this type of problem performs better than the other 2 baselines. The better performance can be seen in most metrics used such as recall, precision, and accuracy. In the context, of Covid, the important metrics to consider would be the Recall and Precision scores for Covid. Both of these metrics are better than the other models. Moving forward, we will tune the parameters for COVINet.
 
 ### 5.2.2 Model parameters
 
