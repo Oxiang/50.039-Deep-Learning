@@ -140,17 +140,17 @@ Methodology
 - To benchmark the custom models, we also experimented using the naïve single convolution model provided in the starter notebook
 - For a more robust benchmark, we modified the resnet architecture, using only a single layer of resnet for the experiments. The rationale was that the dataset was rather small and having too many layers would probably not work as well as they will likely overfit on the training data and this eventually results in poor performance for the Validation data. We chose resnet because it has generally performed well on image classification problems. For example, a paper by Talo, M. uses resnet's [Convolutional Neural Networks for Multi-class Histopathology Image Classification](https://arxiv.org/ftp/arxiv/papers/1903/1903.10035.pdf) and has achieved decent performance for the metrics they chose
 - Finally, the custom network chosen was based of the paper [COVINet: a convolutional neural network approach for predicting COVID-19 from chest X-ray images](https://link.springer.com/article/10.1007/s12652-021-02917-3#Sec9). The model proposed was tested on different number of classes, and has achieved a high accuracy.
-- To test the performance of these models, we use defaults for the optimizer, learning rate, and set a reasonable number of epochs at 15 per classifier.
+- To test the performance of these models, we use defaults for the optimizer, learning rate. The only parameter that we adjust is the number of epochs, based on trial and error. This meant running the models on a large number of epochs and eventually selecting the best epoch number for each model.
 
 <u>**Naïve single convolution model**</u>
 
-The naïve single convolution model was the model provided in the starter notebook. The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/naive_classifier.ipynb`
+The naïve single convolution model was the model provided in the starter notebook. The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/naive_classifier.ipynb`. After initially experimenting using a large number of epochs, the first classifier uses 3 epochs and the second classifier uses 4 epochs before they overfit.
 
 ![](assets/proposed_model/03a_archi.png)
 
 Result:
 
-Accuracy: 15/24 (62.5%)
+Accuracy: 14/24 (58.3%)
 
 Confusion matrix:
 
@@ -158,17 +158,22 @@ Confusion matrix:
 
 |           | Normal | Covid | Non-covid |
 | --------- | ------ | ----- | --------- |
-| Recall    | 0.75   | 0.87  | 0.25      |
-| Precision | 1.00   | 0.53  | 0.40      |
-| f1_score  | 0.85   | 0.66  | 0.30      |
+| Recall    | 0.62   | 0.87  | 0.25      |
+| Precision | 1.00   | 0.46  | 0.50      |
+| f1_score  | 0.76   | 0.60  | 0.33      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/binary_selection/naive_binary_L0_net.txt`
+- `./results/experiments/binary_selection/naive_binary_L1_net.txt`
 
 **<u>Re-implementing a scaled down version of resnet</u>**
 
-The architecture for this model was motivated by resnet. In terms of number of channels, kernel size, stride and padding, the single layer mimics the resnet architecture. A single layer was chosen because the dataset provided is small and a full resnet implementation will likely overfit on the data. The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/resnet_classifier.ipynb`
+The architecture for this model was motivated by resnet. In terms of number of channels, kernel size, stride and padding, the single layer mimics the resnet architecture. A single layer was chosen because the dataset provided is small and a full resnet implementation will likely overfit on the data. The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/resnet_classifier.ipynb`. The model was implemented by hand and trained from scratch.
 
 ![](assets/proposed_model/04a_archi.png)
 
-Result: 16/24 (66.7%)
+Result: 15/24 (62.5%)
 
 Accuracy on validation set: 
 
@@ -180,19 +185,24 @@ Relevant metrics on validation set:
 
 |           | Normal | Covid | Non-covid |
 | --------- | ------ | ----- | --------- |
-| Recall    | 1.00   | 0.50  | 0.50      |
-| Precision | 0.88   | 0.57  | 0.50      |
-| f1_score  | 0.94   | 0.53  | 0.50      |
+| Recall    | 0.75   | 1.00  | 0.12      |
+| Precision | 0.85   | 0.50  | 1.00      |
+| f1_score  | 0.79   | 0.66  | 0.22      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/binary_selection/simple_resnet_L0_net.txt`
+- `./results/experiments/binary_selection/simple_resnet_L1_net.txt`
 
 <u>**Models from literature that tackled similar problems - COVINet**</u>
 
-The architecture for this model was motivated from the following paper: [COVINet: a convolutional neural network approach for predicting COVID-19 from chest X-ray images](https://link.springer.com/article/10.1007/s12652-021-02917-3#Sec9). This model performed the best among the models. From the architecture, it is around the same complexity as the modified resnet but it has more layers than the naïve classifier. The increase in number of convolution layers means that lower layers can learn lower level features and subsequent layers the higher level features. Dropout layers at different parts of the architecture also help to reduce overfitting. The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/COVINet_classifier.ipynb`
+The architecture for this model was motivated from the following paper: [COVINet: a convolutional neural network approach for predicting COVID-19 from chest X-ray images](https://link.springer.com/article/10.1007/s12652-021-02917-3#Sec9). This model performed the best among the models. From the architecture, it is around the same complexity as the modified resnet but it has more layers than the naïve classifier. The increase in number of convolution layers means that lower layers can learn lower level features and subsequent layers the higher level features. Dropout layers at different parts of the architecture also help to reduce overfitting. The notebook for this experiment can be found at `./notebooks/colab/experiments/binary_selection/COVINet_classifier.ipynb`. The model was implemented by hand and trained from scratch. A slight tweak was made to model 2 to add a stride of size 2 to the max pooling layer. This was found to improve the model's performance significantly.
 
 ![](assets/proposed_model/05a_archi.png)
 
 Result:
 
-Accuracy on validation set: 17/24 (70.8%)
+Accuracy on validation set: 16/24 (66.7%)
 
 Confusion matrix
 
@@ -202,9 +212,14 @@ Relevant metrics on validation set:
 
 |           | Normal | Covid | Non-covid |
 | --------- | ------ | ----- | --------- |
-| Recall    | 0.75   | 0.87  | 0.50      |
-| Precision | 1.00   | 0.58  | 0.66      |
-| f1_score  | 0.85   | 0.70  | 0.57      |
+| Recall    | 0.62   | 1.00  | 0.375     |
+| Precision | 1.00   | 0.57  | 0.60      |
+| f1_score  | 0.76   | 0.72  | 0.46      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/binary_selection/COVINet_L0_net.txt`
+- `./results/experiments/binary_selection/COVINet_L1_net.txt`
 
 **<u>Conclusion</u>**
 
@@ -212,19 +227,146 @@ Overall it is evident that the custom COVIN model that was specifically designed
 
 ### 5.2.2 Model parameters
 
-Layers, channels, kernel size
+The architecture was motivated by the following paper: [COVINet: a convolutional neural network approach for predicting COVID-19 from chest X-ray images](https://link.springer.com/article/10.1007/s12652-021-02917-3#Sec9). This section seeks to understand the choice of layers and parameters chosen by this paper. To recap, the model is as follows:
+
+![](assets/proposed_model/05a_archi.png)
+
+**<u>Convolution layers</u>**
+
+One of the approaches to designing Convolution layers is to stack convolution layers as mentioned in class. The initial convolution layers will learn the low level features of the images. Subsequent layers can interpret these extracted features and could have a deeper feature representation.
+
+The original model proposed by the paper uses 1->16->128->256 transitions between convolution layers. This has a large number of parameters which makes sense for their problem because their dataset consists of 10,000 images. In this problem, the dataset we are using only has about 5854 images. Hence, having a smaller output size and thus lesser parameters would likely reduce the likelihood of overfitting.
+
+**<u>Dropout layers</u>**
+
+Dropout means that at training time, we randomly set 1-p of all neurons to 0. This is a way of adding noise to the learning problem. For instance, if there is a certain pattern that consistently occurs in the training data but not in any other dataset, then setting the neurons that identify this pattern to 0 will allow the model to forget these training set specific patterns. This can help to model to generalize better to reduce the likelihood of overfitting.
+
+**<u>Relu layers</u>**
+
+Relu layers help to overcome the vanishing gradient problem. Relu ouputs a true 0 value for values <= 0. This true 0 values are known as a spare representation and can help speed up learning and simplify the model. For values >0, they are output in a  linear fashion. Gradients thus remain proportional to node activations and help to prevent vanishing gradients.
+
+**<u>Pooling layers</u>**
+
+
+
+**<u>Linear layers</u>**
+
+The last linear layer simply outputs a tensor with shape [1 2] corresponding to the probability of a data point being classified as either of the 2 classes.
 
 ### 5.2.3 Mini-batch size
 
-**<u>Recommendation by literature</u>**
+Advantage of using a batch size
 
-**<u>Experimenting with different batch-sizes</u>**
+- Reduce computations since the mean and variance of the whole training set does not have to be computed. This speeds up training.
+- Batch normalization also means that the gradient with respect to the inputs does not depend on the scale of the weights
+
+Some considerations is that batch size should not be below 8 because then the mean and variance will not be stable.
+
+At the same time, the link at https://stats.stackexchange.com/questions/164876/what-is-the-trade-off-between-batch-size-and-number-of-iterations-to-train-a-neu suggests the pitfalls of having a batch size that is too large. If the batch size is too large, this could degrade the model's ability to generalize as they converge to "sharp minimizers of the training and testing functions"
+
+**<u>Recommendations</u>**
+
+Reference links
+
+- https://ai.stackexchange.com/questions/8560/how-do-i-choose-the-optimal-batch-size
+- https://stats.stackexchange.com/questions/164876/what-is-the-trade-off-between-batch-size-and-number-of-iterations-to-train-a-neu
+
+The general rule of thumb for batch size would be `32, 64, 128`
+
+Since the dataset is small, we will experiment with `16,32,64`
+
+- 32 was already done in the pervious section
+
+<u>**Batch size of 16:**</u>
+
+Result:
+
+Accuracy on validation set: 16/24 (66.7%)
+
+Confusion matrix
+
+![](assets/proposed_model/06b_confusion_matrix.png)
+
+Relevant metrics on validation set:
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.87   | 0.75  | 0.375     |
+| Precision | 0.87   | 0.60  | 0.50      |
+| f1_score  | 0.87   | 0.66  | 0.42      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/batch_size/COVINet_L0_net_16.txt`
+- `./results/experiments/batch_size/COVINet_L1_net_16.txt`
+
+<u>**Batch size of 64:**</u>
+
+Result:
+
+Accuracy on validation set: 12/24 (50.0%)
+
+Confusion matrix
+
+![](assets/proposed_model/07b_confusion_matrix.png)
+
+Relevant metrics on validation set:
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.50   | 0.62  | 0.37      |
+| Precision | 1.00   | 0.45  | 0.33      |
+| f1_score  | 0.66   | 0.52  | 0.35      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/batch_size/COVINet_L0_net_64.txt`
+- `./results/experiments/batch_size/COVINet_L1_net_64.txt`
 
 ### 5.2.4 Loss function
 
 <u>**Why cross-entropy loss?**</u>
 
+We used cross-entropy loss when we were experimenting with the 3 class classifier as cross entropy loss is ideal for multi-class networks. We decided to thus preserve the code across to the 2 x binary classifier model. Cross entropy loss also allows us to set weights on the different classes to account for their class imbalances. For example, for the first binary classifier for normal:infected, the ratio is about 1:2.88. To account for this, we can set the same ratios using the following line:
+
+```python
+l0_class_weights = torch.tensor([2.88, 1.0]).to(torch.device(device))
+criterion = nn.CrossEntropyLoss(l0_class_weights)
+```
+
 <u>**Experimenting with weighted cross-entropy to account for imbalanced classes**</u>
+
+The ratios of the classes are as follows
+
+- Normal:infected = 1341:3875 = approx 1:2.88
+- covid:non_covid = 1345:2530 = approx 1:1.88
+
+For normal:infected, it makes sense to favor the infected case a bit more in predictions since it is safer to misclasify a normal person as an infected person rather than an infected person as a normal person. In the latter case, this is dangerous for the public as that person may spread the infection to other people. Hence, the weights chosen are 2.83:1
+
+For covid:non_covid, we favor covid since covid is more deadly than non_covid infections. Hence, we choose a 1.9:1 ratio for the weighs
+
+While experimenting, the epoch counts were tweaked to ensure optimum performance.
+
+**<u>Results</u>**
+
+Accuracy on validation set: 17/24 (70.8%)
+
+Confusion Matrix:
+
+![](assets/proposed_model/08b_confusion_matrix.png)
+
+Relevant metrics on validation set:
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.87   | 1.0   | 0.25      |
+| Precision | 0.87   | 0.57  | 1.00      |
+| f1_score  | 0.87   | 0.72  | 0.40      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/cross_entropy_weights/COVINet_L0_net.txt`
+- `./results/experiments/cross_entropy_weights/COVINet_L1_net.txt`
 
 ## 5.3 Optimizer
 
