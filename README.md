@@ -233,24 +233,95 @@ The architecture was motivated by the following paper: [COVINet: a convolutional
 
 **<u>Convolution layers</u>**
 
+One of the approaches to designing Convolution layers is to stack convolution layers as mentioned in class. The initial convolution layers will learn the low level features of the images. Subsequent layers can interpret these extracted features and could have a deeper feature representation.
+
+The original model proposed by the paper uses 1->16->128->256 transitions between convolution layers. This has a large number of parameters which makes sense for their problem because their dataset consists of 10,000 images. In this problem, the dataset we are using only has about 5854 images. Hence, having a smaller output size and thus lesser parameters would likely reduce the likelihood of overfitting.
+
 **<u>Dropout layers</u>**
 
-
+Dropout means that at training time, we randomly set 1-p of all neurons to 0. This is a way of adding noise to the learning problem. For instance, if there is a certain pattern that consistently occurs in the training data but not in any other dataset, then setting the neurons that identify this pattern to 0 will allow the model to forget these training set specific patterns. This can help to model to generalize better to reduce the likelihood of overfitting.
 
 **<u>Relu layers</u>**
 
-**<u>Max pooling layers</u>**
+Relu layers help to overcome the vanishing gradient problem. Relu ouputs a true 0 value for values <= 0. This true 0 values are known as a spare representation and can help speed up learning and simplify the model. For values >0, they are output in a  linear fashion. Gradients thus remain proportional to node activations and help to prevent vanishing gradients.
+
+**<u>Pooling layers</u>**
+
+
 
 **<u>Linear layers</u>**
 
-Layers, channels, kernel size
+The last linear layer simply outputs a tensor with shape [1 2] corresponding to the probability of a data point being classified as either of the 2 classes.
 
 ### 5.2.3 Mini-batch size
 
-**<u>Recommendation by literature</u>**
+Advantage of using a batch size
 
-**<u>Experimenting with different batch-sizes</u>**
+- Reduce computations since the mean and variance of the whole training set does not have to be computed. This speeds up training.
+- Batch normalization also means that the gradient with respect to the inputs does not depend on the scale of the weights
 
+Some considerations is that batch size should not be below 8 because then the mean and variance will not be stable.
+
+At the same time, the link at https://stats.stackexchange.com/questions/164876/what-is-the-trade-off-between-batch-size-and-number-of-iterations-to-train-a-neu suggests the pitfalls of having a batch size that is too large. If the batch size is too large, this could degrade the model's ability to generalize as they converge to "sharp minimizers of the training and testing functions"
+
+**<u>Recommendations</u>**
+
+Reference links
+
+- https://ai.stackexchange.com/questions/8560/how-do-i-choose-the-optimal-batch-size
+- https://stats.stackexchange.com/questions/164876/what-is-the-trade-off-between-batch-size-and-number-of-iterations-to-train-a-neu
+
+The general rule of thumb for batch size would be `32, 64, 128`
+
+Since the dataset is small, we will experiment with `16,32,64`
+
+- 32 was already done in the pervious section
+
+<u>**Batch size of 16:**</u>
+
+Result:
+
+Accuracy on validation set: 16/24 (66.7%)
+
+Confusion matrix
+
+![](assets/proposed_model/06b_confusion_matrix.png)
+
+Relevant metrics on validation set:
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.87   | 0.75  | 0.375     |
+| Precision | 0.87   | 0.60  | 0.50      |
+| f1_score  | 0.87   | 0.66  | 0.42      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/batch_size/COVINet_L0_net_16.txt`
+- `./results/experiments/batch_size/COVINet_L1_net_16.txt`
+
+<u>**Batch size of 64:**</u>
+
+Result:
+
+Accuracy on validation set: 12/24 (50.0%)
+
+Confusion matrix
+
+![](assets/proposed_model/07b_confusion_matrix.png)
+
+Relevant metrics on validation set:
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.50   | 0.62  | 0.37      |
+| Precision | 1.00   | 0.45  | 0.33      |
+| f1_score  | 0.66   | 0.52  | 0.35      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/batch_size/COVINet_L0_net_64.txt`
+- `./results/experiments/batch_size/COVINet_L1_net_64.txt`
 ### 5.2.4 Loss function
 
 <u>**Why cross-entropy loss?**</u>
