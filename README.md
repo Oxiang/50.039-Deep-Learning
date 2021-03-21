@@ -41,15 +41,47 @@ README.md # contains the overview of the project and explanations for the differ
 
 ## 3.1 Training the final model
 
+To train the final model from scratch, simply follow the steps provided below:
+
+Step 1. Move to the folder
+
+```shell
+cd notebooks/colab/final
+```
+
+Step 2. Open binary_classifier_model.ipynb in Jupyter Notebook
+
+Step 3. Run every cells **EXCEPT** for category 8.2.1
+
 ## 3.2 Loading and testing the trained model
+
+The pre-trained weights are stored in the same folder as the final model. Follow the steps to recreate the testing model.
+
+Step 1. Move to the folder
+
+```shell
+cd notebooks/colab/final
+```
+
+Step 2. Open binary_classifier_model.ipynb in Jupyter Notebook
+
+Step 3. Run every cells **EXCEPT** for category 8.1.1, 8.2.1, 9.1 and 9.2
+
+
 
 # 4. Data analysis <a name="DA"></a>
 
 ## 4.1 Custom Datasets and Dataloader
 
+The custom dataset requires two core methods to work: __len__ and __getitem__. For __len__ method, it simply returns the total size of the datasets. As for __getitem__, it will match the index provided to the size of each classes in the dataset and tweak the path and final index to retrieve the image from the targeted folder.
+
 ### 4.1.1 Binary cascade problem
 
+The dataset class in the binary cascade problem is split into 2 separate classes, L0_Lung_Dataset and L1_Lung_Dataset. The L0_Lung_Dataset class is used to provide images and labels of normal vs infected datasets. L1_Lung_Dataset on the other hand is used to provide images and labels of infected COVID and infected non-COVID. 
+
 ### 4.1.2 Three-class problem
+
+For the three-class dataset, it is much simpler. The Lung_Dataset class is used to provide images and labels for normal, infected COVID and infected non-COVID. 
 
 ## 4.2 Distribution of data among classes and analysis
 
@@ -128,10 +160,18 @@ How it can be used in the model?
 
 **<u>Differences between the 2 architectures</u>**
 
+The first architecture is built on top of two binary classifiers. In this project, the top layer will classify normal vs infected x-rays and subsequent layer will classify COVID vs non-COVID x-rays. This approach is advantageous as each models are able to learn distinct features that are catered towards their primary target. At the same time, each model is able to fully utilize the complementary datasets (e.g. infected COVID and infected non-COVID can be considered as infected) which could improve the accuracy of the models. 
+
+The seconds architecture is a three class classifier. It classifies the x-rays according to normal, infected COVID and infected non-COVID cases. With this architecture, the overall classification is reliant on only one model which reduces the training time and tuning parameters. 
+
 **<u>Why we chose the 2 binary classifier approach</u>**
 
 ## 5.2 2 Binary classifiers architecture design
+As the number of dataset is generally low, using the first architecture, 2 binary classifier, would allow us to tap onto complementary datasets to train each of the models. Furthermore, having two layers will allow the flexibility to tune individual hyperparameter to improve the overall accuracy for that specific model.
 
+On the hindsight, it is unclear if the architecture is truly the best option to take. As such, we will be doing an exploratory analysis using both models and evaluating their effectiveness. 
+
+## 5.2 2 2 Binary classifiers architecture design
 ### 5.2.1 Referencing literature and traditional well-performing models
 
 Methodology
@@ -374,23 +414,113 @@ The results for loss and accuracy on the train and test set during training can 
 
 <u>**Adam vs AdamW theory**</u>
 
+The core difference between AdamW and Adam is the regularization pattern. For Adam, the weight decay ends up with the moving average while AdamW ensures that the regularization term does not, which make the regularization proportional to the weight itself.
+
+Experimentally, AdamW should yield better training loss and that the models generalize much better than models trained with Adam. 
+
 <u>**Adam vs AdamW empirical**</u>
+
+Log: results/experiments/tuning_layer_0_hyperparameters.log
+
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | -------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
+| 10     | 0.0001        | 0.1             | 0            | AdamW     | 0.9413   |
+
+From the table, we can see that with Adam optimizer, the accuracy is slightly higher than AdamW. However, this might be affected by the Dataloader random shuffle. Since the difference is small, we would pick AdamW as the optimizer. 
 
 ### 5.3.2 Regularization - Weight Decay
 
-### 5.3.3 Learning rate
+The weight decay parameter is use as a L2 regularization in the Adam optimizer. L2 regularization is used to alleviate overfitting of the model. 
 
-**<u>Recommendation by literature</u>**
+Log: results/experiments/tuning_layer_0_hyperparameters.log
+
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | -------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
+| 10     | 0.0001        | 0.1             | 0.005        | Adam      | 0.9468   |
+
+With all other hyperparameters equal, it is found that weight decay of 0 has the same accuracy than a weight decay of 0.005. One advantage of having the weight is to prevent overfitting. Since both of the accuracy are roughly the same, we will be using decay weight of 0.005. 
+
+### 5.3.3 Learning rate
 
 **<u>Experimenting with different learning rates</u>**
 
+Log: results/experiments/tuning_layer_0_hyperparameters.log
+
+Log file: layer_0_gridsearch.log
+
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | -------- |
+| 10     | 0.00001       | 0.1             | 0            | Adam      | 0.8696   |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
+| 10     | 0.001         | 0.1             | 0            | Adam      | 0.9688   |
+
+From the experiment, we can see that reducing the learning rate by a factor of 10 drastically reduces the overall accuracy. One explanation could be that the reduced learning rate slows down the rate of convergence. This in turn reduces the accuracy of the model at the given epoch while having the same hyperparameters. 
+
+At the same time, we can see that a learning rate of 0.001 has a higher accuracy. However, as we look closer to the training logs, it can be seen that it is overfitting as the training loss increases even when the training accuracy decreases. As such, we will be taking learning rate of 0.0001.
+
+| Epoch | Training Accuracy | Test Loss |
+| ----- | ----------------- | --------- |
+| 1     | 0.8209            | 1.1383    |
+| 2     | 0.9201            | 0.8361    |
+| 3     | 0.9377            | 0.6164    |
+| 4     | 0.9494            | 0.7095    |
+| 5     | 0.9553            | 1.0498    |
+| 6     | 0.9659            | 1.2475    |
+| 7     | 0.9678            | 1.2539    |
+| 8     | 0.9657            | 1.2458    |
+| 9     | 0.9672            | 1.3407    |
+| 10    | 0.9688            | 1.2613    |
+
+
+
 ### 5.3.4 Scheduled learning rate
+
+Log: results/experiments/tuning_layer_0_hyperparameters.log
+
+Under the hyperparameter folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [0.1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
+
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | -------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
+| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.9346   |
+
+From the table, we can see that there are hardly noticeable change in the accuracy. This could due to the low epoch count that makes the difference inconsequential. As such, we will not be using scheduler for the final model. 
 
 ## 5.4 Model parameters
 
-**<u>Number of epochs</u>**
+In our final model, we will be using the stated parameter number as provided based on the initial hyperparameter experimentation and **further fine-tuning**.
+
+**Layer 0**
+
+- Number of Epochs: 5
+- Learning Rate: 0.0001
+- Weight Decay: 0.0005
+- Optimizer: AdamW
+- Learning Rate Scheduler: None
+
+**Layer 1**
+
+- Number of Epochs : 35
+- Learning Rate: 0.0001
+- Weight Decay: 0.0005
+- Optimizer: AdamW
+- Learning Rate Scheduler: None
 
 ## 5.5 Implementing checkpoints
+
+Checkpoints are saved at every epoch to ensure that the models can be loaded for evaluation. In the event of crashing midway during training, the checkpoints can provide the state to continue training again.
+
+The Checkpoint stores the following variables:
+
+- Current epochs
+- Model state dict
+- Optimizer state dict
+- training loss
+- test loss
+- test accuracy
+- training accuracy
 
 # 6. Model Summary <a name="MODEL2"></a>
 
