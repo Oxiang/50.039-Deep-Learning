@@ -1,4 +1,7 @@
 # 50.039-Deep-Learning
+
+GitHub Link: https://github.com/Oxiang/50.039-Deep-Learning/tree/main
+
 For Module 50.039
 
 Students:
@@ -38,14 +41,17 @@ Students:
       |_ cross_entropy_weights
       	|_ COVINet_classifier.ipynb
     |_ final
-      |_ binary_classifier_model.ipynb
       |_ train_binary_classifier_model.ipynb
       |_ test_binary_classifier_model.ipynb
       |_ binary_classifier_log.txt
-      |_ checkpoint_model_5_binary_L0_net_21_03_2021_20_42_56
-      |_ checkpoint_model_10_binary_L1_net_21_03_2021_20_39_57
+      |_ checkpoint_model_5_binary_L0_net_21_03_2021_20_42_56 # layer 0 model
+      |_ checkpoint_model_10_binary_L1_net_21_03_2021_20_39_57 # layer 1 model
     |_ tuning
       |_ Hyperparameters Experiment.ipynb
+  |_ local
+    |_ final
+      |_ test_binary_classifier_model.ipynb
+      |_ train_binary_classifier_model.ipynb
   |_ references
     |_ custom_dataset_dataloader_demo.ipynb
 - instructions # contains the small project instructions 
@@ -55,43 +61,37 @@ README.md # contains the overview of the project and explanations for the differ
 
 # 3. Final files and instructions on running them <a name="INSTRUCTIONS"></a>
 
-## 3.1 Inspect the final model
+## 3.1 Training the final model
 
-To Inspect the final model, simply follow the steps provided below:
-
-Step 1. Move to the folder
-
-```shell
-cd notebooks/colab/final
-```
-
-Step 2. Open **binary_classifier_model.ipynb** in Jupyter Notebook or Colab
-
-## 3.2 Training the final model
+The file for this can be found in `./notebooks/local/final/train_binary_classifier_model.ipynb`
 
 To train the final model from scratch, simply follow the steps provided below:
 
 Step 1. Move to the folder
 
 ```shell
-cd notebooks/colab/final
+cd notebooks/local/final
 ```
 
-Step 2. Open **train_binary_classifier_model.ipynb** in Jupyter Notebook or Colab
+Step 2. Open **train_binary_classifier_model.ipynb** in Jupyter Notebook
 
 Step 3. Run every cells
 
-## 3.3 Loading and testing the trained model
+## 3.2 Loading and testing the trained model
+
+The file for this can be found in `./notebooks/local/final/test_binary_classifier_model.ipynb`
+
+<u>**Running on Jupyter Notebook locally**</u>
 
 The pre-trained weights are stored in the same folder as the final model. Follow the steps to recreate the testing model.
 
 Step 1. Move to the folder
 
 ```shell
-cd notebooks/colab/final
+cd notebooks/local/final
 ```
 
-Step 2. Open **test_binary_classifier_model.ipynb** in Jupyter Notebook or Colab
+Step 2. Open **test_binary_classifier_model.ipynb** in Jupyter Notebook
 
 Step 3. Run every cells
 
@@ -107,9 +107,95 @@ The custom dataset requires two core methods to work: __len__ and __getitem__. F
 
 The dataset class in the binary cascade problem is split into 2 separate classes, L0_Lung_Dataset and L1_Lung_Dataset. The L0_Lung_Dataset class is used to provide images and labels of normal vs infected datasets. L1_Lung_Dataset on the other hand is used to provide images and labels of infected COVID and infected non-COVID. 
 
+```python
+def __len__(self):
+        """
+        Length special method, returns the number of images in dataset.
+        """
+        
+        # Length function
+        return sum(self.dataset_numbers.values())
+    
+    
+    def __getitem__(self, index):
+        """
+        Getitem special method.
+        
+        Expects an integer value index, between 0 and len(self) - 1.
+        
+        Returns the image and its label as a one hot vector, both
+        in torch tensor format in dataset.
+        """
+        
+        # Get item special method
+        first_val = int(list(self.dataset_numbers.values())[0])
+        if index < first_val:
+            class_val = 'normal'
+            label = torch.Tensor([1, 0])
+            covid_status = ""
+        else:
+            class_val = 'infected'
+            index = index - first_val
+            label = torch.Tensor([0, 1])
+            infected_covid_numbers = int(list(self.infected_sub_class_numbers.values())[0]) # covid
+            if index < infected_covid_numbers:
+                class_val = 'infected'
+                covid_status = 'covid'
+            else:
+                class_val = 'infected'
+                index = index - infected_covid_numbers
+                covid_status = 'non-covid'
+        im = self.open_img(self.groups, class_val, covid_status, index)
+        im = transforms.functional.to_tensor(np.array(im)).float()
+        return im, label
+```
+
+
+
 ### 4.1.2 Three-class problem
 
 For the three-class dataset, it is much simpler. The Lung_Dataset class is used to provide images and labels for normal, infected COVID and infected non-COVID. 
+
+```python
+def __len__(self):
+        """
+        Length special method, returns the number of images in dataset.
+        """
+        
+        # Length function
+        return sum(self.dataset_numbers.values())
+    
+    
+    def __getitem__(self, index):
+        """
+        Getitem special method.
+        
+        Expects an integer value index, between 0 and len(self) - 1.
+        
+        Returns the image and its label as a one hot vector, both
+        in torch tensor format in dataset.
+        """
+        
+        # Get item special method
+        first_val = int(list(self.dataset_numbers.values())[0])
+        second_val = int(list(self.dataset_numbers.values())[1])
+        if index < first_val:
+            class_val = 'normal'
+            label = torch.Tensor([1, 0, 0])
+        elif index < (first_val+second_val):
+            class_val = 'infected_covid'
+            index = index - first_val
+            label = torch.Tensor([0, 1, 0])
+        else:
+            class_val = "infected_non_covid"
+            index = index - (first_val+second_val)
+            label = torch.Tensor([0, 0, 1])
+        im = self.open_img(self.groups, class_val, index)
+        im = transforms.functional.to_tensor(np.array(im)).float()
+        return im, label
+```
+
+
 
 ## 4.2 Distribution of data among classes and analysis
 
@@ -194,7 +280,6 @@ The 2 x binary classifiers is more specific and tackles 2 sequential binary clas
 
 **<u>Why we chose the 2 binary classifier approach</u>**
 
-<<<<<<< HEAD
 As the number of dataset is generally low, using the first architecture, 2 binary classifier, would allow us to tap onto complementary datasets to train each of the models (for example, the number of infected cases comprises the covid and non covid cases, effectively "increasing" the training data for infected). Furthermore, having two layers will allow the flexibility to tune individual hyperparameter to improve the overall accuracy for that specific model.
 
 To confirm our hypothesis, we did an exploratory analysis using both models and evaluate their effectiveness. 
@@ -210,9 +295,9 @@ The notebooks can be found at
 
 **Result for 3-class classifier**
 
-Accuracy: 14/24 (58.3%)
+Validation Accuracy: 14/24 (58.3%)
 
-Confusion matrix:
+Confusion matrix on Validation set:
 
 ![](assets/proposed_model/01b_confusion_matrix.png)
 
@@ -228,9 +313,9 @@ The results for loss and accuracy on the train and test set during training can 
 
 **Result for 2 x binary classifiers:**
 
-Accuracy: 15/24 (62.5%)
+Validation Accuracy: 15/24 (62.5%)
 
-Confusion matrix:
+Confusion matrix on Validation set:
 
 ![](assets/proposed_model/03b_confusion_matrix.png)
 
@@ -247,7 +332,7 @@ The results for loss and accuracy on the train and test set during training can 
 
 **Conclusion**
 
-The results without any tuning of parameters for both architectures are largely equal. It is interesting the that multi-class one predicts normal classes better and the 2 x binary one predicts Covid better. Predicting Covid well aligns more with the desired outcomes of the model. Based on our hypothesis of the proposed advantages of the 2 x binary model, we will proceed with it and propose and tune models that aim to improve on the baseline scores above.
+The results without any tuning of parameters for both architectures are largely equal. It is interesting that the multi-class one predicts normal classes better and the 2 x binary one predicts Covid better. Predicting Covid well aligns more with the desired outcomes of the model. Based on our hypothesis of the proposed advantages of the 2 x binary model, we will proceed with it and propose and tune models that aim to improve on the baseline scores above.
 
 ## 5.2 2 2 Binary classifiers architecture design
 
@@ -269,9 +354,9 @@ The naïve single convolution model was the model provided in the starter notebo
 
 Result:
 
-Accuracy: 15/24 (62.5%)
+Validation Accuracy: 15/24 (62.5%)
 
-Confusion matrix:
+Confusion matrix on Validation set:
 
 ![](assets/proposed_model/03b_confusion_matrix.png)
 
@@ -294,9 +379,9 @@ The architecture for this model was motivated by resnet. In terms of number of c
 
 Result: 12/24 (50%)
 
-Accuracy on validation set: 
+Validation Accuracy: 
 
-Confusion matrix
+Confusion matrix on Validation set:
 
 ![](assets/proposed_model/04b_confusion_matrix.png)
 
@@ -325,7 +410,7 @@ Result:
 
 Accuracy on validation set: 16/24 (66.7%)
 
-Confusion matrix
+Confusion matrix on Validation set:
 
 ![](assets/proposed_model/05b_confusion_matrix.png)
 
@@ -344,7 +429,7 @@ The results for loss and accuracy on the train and test set during training can 
 
 **<u>Conclusion</u>**
 
-Overall it is evident that the custom COVIN model that was specifically designed for this type of problem performs better than the other 2 baselines. The better performance can be seen in most metrics used such as recall, precision, and accuracy. In the context, of Covid, the important metrics to consider would be the Recall and Precision scores for Covid. Both of these metrics are better than the other models. Moving forward, we will tune the parameters for COVINet.
+Overall it is evident that the custom COVID model that was specifically designed for this type of problem performs better than the other 2 baselines. The better performance can be seen in most metrics used such as recall, precision, and accuracy. In the context, of Covid, the important metrics to consider would be the Recall and Precision scores for Covid. Both of these metrics are better than the other models. Moving forward, we will tune the parameters for COVINet.
 
 ### 5.2.2 Model parameters
 
@@ -444,7 +529,7 @@ Result:
 
 Accuracy on validation set: 16/24 (66.7%)
 
-Confusion matrix
+Confusion matrix on Validation set:
 
 ![](assets/proposed_model/06b_confusion_matrix.png)
 
@@ -469,7 +554,7 @@ Result:
 
 Accuracy on validation set: 12/24 (50.0%)
 
-Confusion matrix
+Confusion matrix on Validation set:
 
 ![](assets/proposed_model/07b_confusion_matrix.png)
 
@@ -518,7 +603,7 @@ While experimenting, the epoch counts were tweaked to ensure optimum performance
 
 Accuracy on validation set: 17/24 (70.8%)
 
-Confusion Matrix:
+Confusion Matrix on Validation set::
 
 ![](assets/proposed_model/08b_confusion_matrix.png)
 
@@ -543,20 +628,26 @@ There is slight improvement once the weights are added. Hence, these weights wil
 
 <u>**Adam vs AdamW theory**</u>
 
+For Optimizers like Adam and AdamW, the L2 Regularization is implemented on the optimizer using `weight_decay`
+
+The parameter for weight decay in pytorch is as follow: weight_decay (float, optional) – weight decay (L2 penalty) (default: 0)
+
+The lectures from week 5 also mentions that for SGD, the effect of weight decay is the same as doing l2-regularization. This can potentially help reduce overfitting.
+
 The core difference between AdamW and Adam is the regularization pattern. For Adam, the weight decay ends up with the moving average while AdamW ensures that the regularization term does not, which makes the regularization proportional to the weight itself.
 
-Experimentally, AdamW should yield better training loss and that the models generalize much better than models trained with Adam. 
+Theoretically, AdamW should yield better training loss and that the models generalize much better than models trained with Adam. 
 
 <u>**Adam vs AdamW empirical**</u>
 
 Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
-| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
-| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
-| 10     | 0.0001        | 1               | 0            | AdamW     | 0.8125        | 0.9700            | 0.9375         |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Val Average Precision | Val Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | --------------------- | ------------------ |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700                | 0.9375             |
+| 10     | 0.0001        | 1               | 0            | AdamW     | 0.8125        | 0.9700                | 0.9375             |
 
-From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam in layer 0. However, this might be affected by the Dataloader random shuffle. We pick AdamW as the optimizer for layer 0 for initial fine tuning. 
+From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam in layer 0. We pick AdamW as the optimizer for layer 0 for initial fine tuning. 
 
 ### 5.3.2 Regularization - Weight Decay
 
@@ -564,13 +655,13 @@ The weight decay parameter is used as a L2 regularization in the Adam optimizer.
 
 Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
-| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
-| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
-| 10     | 0.0001        | 1               | 0.00001      | Adam      | 0.7870        | 0.9211            | 0.8125         |
-| 10     | 0.0001        | 1               | 0.01         | Adam      | 0.7729        | 0.9444            | 0.875          |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Val Average Precision | Val Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | --------------------- | ------------------ |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700                | 0.9375             |
+| 10     | 0.0001        | 1               | 0.00001      | Adam      | 0.7870        | 0.9211                | 0.8125             |
+| 10     | 0.0001        | 1               | 0.01         | Adam      | 0.7729        | 0.9444                | 0.875              |
 
-With all other hyperparameters equal, it is found that both weight decay of 0.00001 and weight decay of 0.01 have a lower average precision and average recall than the weight decay of 0. However, one advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0.1 instead for initial fine tuning. 
+With all other hyperparameters equal, it is found that both weight decay of 0.00001 and weight decay of 0.01 have a lower average precision and average recall than the weight decay of 0. However, one advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0 for initial fine tuning.
 
 ### 5.3.3 Learning rate
 
@@ -584,7 +675,7 @@ Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 | 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
 | 10     | 0.001         | 1               | 0            | Adam      | 0.7568        | 0.9063            | 0.9063         |
 
-From the experiment, we can see that both the average precision and average recall for learning rate 0.00001 and 0.001 are lower than learning rate of 0.0001. Since we prioritize precision and recall, we will choose learning rate of 0.0001 for initial fine tuning.
+From the experiment, we can see that both the average precision and average recall for learning rate 0.00001 and 0.001 are lower than learning rate of 0.0001. Since we prioritize precision and recall, we will choose learning rate of 0.0001 for initial fine tuning. This give us a rough number to get started when implementing the final model.
 
 ### 5.3.4 Scheduled learning rate
 
@@ -592,12 +683,14 @@ Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
 Under the hyperparameter folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
 
+As the epoch increases, it moves closer the to convergence point. The learning rate scheduler helps to reduce the learning rate and the convergence speed of the model, which prevents the model from jumping out of the optima.
+
 | Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
 | ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
 | 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
 | 10     | 0.0001        | 0.001           | 0            | Adam      | 0.7896        | 0.9444            | 0.875          |
 
-From the table, we can see that scheduler gamma of 1 (no decay) has better average precision and average recall. As such we will not be using scheduled learning rate in our model for initial fine tuning.
+From the table, we can see that scheduler gamma of 1 (no decay) has better average precision and average recall. As such we will not be using scheduled learning rate in our model for initial fine tuning.	
 
 ## 5.4 Model parameters
 
@@ -635,7 +728,55 @@ The Checkpoint stores the following variables:
 
 # 6. Model Summary <a name="MODEL2"></a>
 
-Recapitulation
+![](assets/proposed_model/05a_archi.png)
+
+```python
+class L1_Net(nn.Module):
+    def __init__(self, num_layers=1):
+        super(L1_Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 8, 3, 1)
+        self.dropout1 = nn.Dropout2d(0.2)
+        self.relu = nn.ReLU()
+        self.conv2 = nn.Conv2d(8, 16, 3, 1)
+        self.conv3 = nn.Conv2d(16, 32, 3, 1)
+        self.avgpool = nn.AvgPool2d(3,3)
+        self.maxpool = nn.MaxPool2d(2, stride=2)
+        self.fc1 = nn.Linear(16928, 2)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.dropout1(x)
+        x = self.relu(x)
+        x = self.conv2(x)
+        x = self.relu(x)
+        x = self.maxpool(x)
+        x = self.dropout1(x)
+        x = self.conv3(x)
+        x = self.relu(x)
+        x = self.avgpool(x)
+        x = self.dropout1(x)
+        x = self.relu(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        output = F.log_softmax(x, dim = 1)
+        return output
+```
+
+**Layer 0**
+
+- Number of Epochs: 5
+- Learning Rate: 0.001
+- Weight Decay: 0
+- Optimizer: AdamW
+- Learning Rate Scheduler: None
+
+**Layer 1**
+
+- Number of Epochs : 10
+- Learning Rate: 0.001
+- Weight Decay: 0.00001
+- Optimizer: AdamW
+- Learning Rate Scheduler: None
 
 # 7. Evaluation <a name="EVAL"></a>
 
@@ -647,9 +788,13 @@ Loss vs epochs
 
 ![](assets/final/layer_0_loss_epoch.PNG)
 
+We started with large number of epochs. As we proceed, we found that the optimum number of epochs ranges from 4 - 6. In this graph, we notice that the loss increases after epoch 3 and this is because the Dataloader have randomly shuffled the data. Thus, the results are non-deterministic. 
+
 **Layer 1**
 
 ![](assets/final/layer_1_loss_epoch.PNG)
+
+For layer 1, we found the optimum number of epochs ranges from 5 - 10.
 
 Accuracy vs epochs
 
@@ -677,6 +822,26 @@ Combined Accuracy: 0.7916666666666666
 | non-COVID | 1.0                | 0.5    | 0.6666666666666666 |
 | Normal    | 1.0                | 0.875  | 0.9333333333333333 |
 
+Precision = $\frac{tp}{tp + fp}$
+
+Recall (also Sensitivity) = $\frac{tp}{tp + fn}$
+
+Specificity = $\frac{tn}{tn + fp}$
+
+For this project, the metrics can be applied differently considering the needs of different stakeholders. 
+
+**Considering COVID, we cite 2 stakeholders who could have different concerns**
+
+For example, the general public could be concerned about the spread of the virus, hence, they could be more worried about Recall because false negatives could mean that people with the virus in the public space and mingling with others.
+
+On the other hand, the clinicians could be more concerned about Precision. This is because there are limited hospital beds and it would be a waste of resources to allocated scarce resource to people who do not have covid but were predicted to have covid. This can be a problem if there is a model that predicts everyone to have covid. While this model successfully identifies all covid cases, there will be a lot of people who do not actually have covid being admitted to the hospitals for treatment. This puts a strain on resources.
+
+Similarly, they would be interested in high specificity which is the percentage of people who are predicted negative among all the predications cases who are truly negative. A higher value for this would similarly reduce the strain of hospital resources as it implies that those who really do not have covid are likely predicted as not having covid and will not need treatment.
+
+For the analysis below we focus on `recall` as there was a time when the world was focused on containing the spread of covid which is aligned with the saying that "prevention is better than cure". We also output `precision` and the `f1` score to consider that other stakeholders are important as well.
+
+From the metrics, the important classification is that the model successfully predicted that all the people who have covid are detected as having covid. In addition, the precision is still acceptable as it is able to detect people who have infections but are non_covid. Hence, from the public's perspective, the high recall on Covid would make them feel more assured. However, a potential room for improvement would be to better differentiate the infected covid from infected non_covid as the false positives would mean that precious hospital resources would be taken up. In this case, 1 normal patient and 4 infected non-covid patients were detected to have covid. This generally speaks of the inherent difficulty of differentiating covid and non covid patients. Perhaps from the X-rays the difference between the 2 are only very minor. Considering the days since infection, early stages of covid could barely be any different from the non-covid cases.
+
 ## 7.3 Accuracy and image diagrams
 
 ![](assets/final/diagram_1.PNG)
@@ -689,17 +854,26 @@ Combined Accuracy: 0.7916666666666666
 
 ## 7.4 Investigating failures with feature maps
 
+![](assets/final/classified_2.PNG)
+
 ![](assets/final/misclassified_1.PNG)
 
-The validation image above (normal) was misclassified as an infected-COVID. We can see from above that the misclassified image has very similar feature map as a correctly classified infected-COVID image. From here, we can deduce that any feature maps that have close resemblance to the respective classes' feature map will most likely to be classified under that particular class.
+The validation image above (normal) was misclassified as an infected-COVID. We can see from above that the misclassified image has very similar feature map as a correctly classified infected-COVID image. An example will be the extreme left image.
+
+Considering that the feature maps was created based on the first convolution layers, we can see that the low lying features will influence the result and the output.
 
 ![](assets/final/classified_1.PNG)
 
 # 8. Challenges of predictions <a name="CHALLENGE"></a>
 
-## 8.1 Differentiating covid and non-covid
+## 8.1 Why is it more difficult to differentiate between non-covid and covid x-rays, rather than between normal x-rays and infected (both covid and non-covid) people x-rays
 
-One of the toughest problem for differentiating COVID vs non-COVID was to determine the best architecture to use for this classification task. In this case, we had to choose either the 3-class classification or the binary classification approach. Besides the theocratical knowledge, it was not clear which model was best suited in this case. Since both are logical in terms of classifying, there was a need to conduct experiments to explore the advantages and disadvantages pertaining to each architecture. 
+Intuitively infected lungs should have features that differentiate them from non-infected lungs. Clinicians would look out for tell-tale signs like the heart and diaphragm and inflammation. The model can also pick up on these features from the X-Ray and thus is able to differentiate them fairly accurately. However, differentiating covid from non covid infected lungs is much more challenging. This is even a problem for well-trained clinicians. If humans with many years of experience have trouble detecting it then machine learning models which mimic the human brain will also have difficulty.
+
+Reference link: [How accurate is chest imaging for diagnosing COVID-19?](https://www.cochrane.org/CD013639/INFECTN_how-accurate-chest-imaging-diagnosing-covid-19)
+
+- Defines X-Rays as "X-rays (radiography) use radiation to produce a 2-D image"
+- This paper pooled results from several sources (if there were 4 or more results). For Chest X-rays, it found that the Chest X-ray "correctly diagnosed COVID-19 in 80.6% of the people who had COVID-19. However it incorrectly identified COVID-19 in 28.5% of the people who did not have COVID-19"
 
 # 9. Overall - what is the better model, accuracy vs low true negatives/false positives rates on certain classes <a name="OVERALL"></a>
 
@@ -715,9 +889,9 @@ For this project, the metrics can be applied differently considering the needs o
 
 For example, the general public could be concerned about the spread of the virus, hence, they could be more worried about Recall because false negatives could mean that people with the virus in the public space and mingling with others.
 
-On the other hand, the clinicans could be more concerned about Precision. This is because there are limited hospital beds and it would be a waste of resources to allocated scarce resource to people who do not have covid but were predicted to have covid. This can be a problem if there is a model that predicts everyone to have covid. While this model successfully identifies all covid cases, there will be a lot of people who do not actually have covid being admitted to the hospitals for tratement. This puts a strain on resources.
+On the other hand, the clinicians could be more concerned about Precision. This is because there are limited hospital beds and it would be a waste of resources to allocated scarce resource to people who do not have covid but were predicted to have covid. This can be a problem if there is a model that predicts everyone to have covid. While this model successfully identifies all covid cases, there will be a lot of people who do not actually have covid being admitted to the hospitals for treatment. This puts a strain on resources.
 
-Similarly, they would be interested in high specificity which is the percentage of people who are predicted negative among all the predicitions cases who are truly negative. A higher value for this would similarly reduce the strain of hospital resources as it implies that those who really do not have covid are likely predicted as not having covid and will not need treatment.
+Similarly, they would be interested in high specificity which is the percentage of people who are predicted negative among all the predictions cases who are truly negative. A higher value for this would similarly reduce the strain of hospital resources as it implies that those who really do not have covid are likely predicted as not having covid and will not need treatment.
 
 For the analysis below we focus on `recall` as there was a time when the world was focused on containing the spread of covid which is aligned with the saying that "prevention is better than cure". We also output `precision` and the `f1` score to consider that other stakeholders are important as well.
 
