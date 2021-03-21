@@ -160,18 +160,68 @@ How it can be used in the model?
 
 **<u>Differences between the 2 architectures</u>**
 
-The first architecture is built on top of two binary classifiers. In this project, the top layer will classify normal vs infected x-rays and subsequent layer will classify COVID vs non-COVID x-rays. This approach is advantageous as each models are able to learn distinct features that are catered towards their primary target. At the same time, each model is able to fully utilize the complementary datasets (e.g. infected COVID and infected non-COVID can be considered as infected) which could improve the accuracy of the models. 
+The 3-class classifier architecture classifies the x-rays according to normal, infected COVID and infected non-COVID cases. With this architecture, the overall classification is reliant on only one model which reduces the training time and the number of parameters that need to be tuned. This is a multi-class classifier that uses a tensor of 3 values. Example, normal can correspond to `[1 0 0]`. The model thus outputs a tensor of this shape as well.
 
-The seconds architecture is a three class classifier. It classifies the x-rays according to normal, infected COVID and infected non-COVID cases. With this architecture, the overall classification is reliant on only one model which reduces the training time and tuning parameters. 
+The 2 x binary classifiers is more specific and tackles 2 sequential binary classification problems. In this project, the top layer will classify normal vs infected x-rays. If the output of the first layer is infected, it will be fed to the next layer which classifies COVID vs non-COVID x-rays. This approach is advantageous as each models are able to learn distinct features that are catered towards their primary target. For example, it seems intuitive that there would be distinct features between the normal and infected X-rays and this is elaborated in published medical papers where doctors look for certain tell-tale signs in lungs such as obscured line markings of the lings (see section 10). The second classifier is based on the hypothesis that there is a difference between infected non covid lungs and infected covid lungs. This is also briefly mentioned in section 10. In real life the efficacy of differentiating between the 2 is not that great. Hence, to improve the model's chances of differentiating the 2, it makes more sense to have a dedicated model to learn the subtle differences and hopefully have better predictions.
 
 **<u>Why we chose the 2 binary classifier approach</u>**
 
-## 5.2 2 Binary classifiers architecture design
-As the number of dataset is generally low, using the first architecture, 2 binary classifier, would allow us to tap onto complementary datasets to train each of the models. Furthermore, having two layers will allow the flexibility to tune individual hyperparameter to improve the overall accuracy for that specific model.
+As the number of dataset is generally low, using the first architecture, 2 binary classifier, would allow us to tap onto complementary datasets to train each of the models (for example, the number of infected cases comprises the covid and non covid cases, effectively "increasing" the training data for infected). Furthermore, having two layers will allow the flexibility to tune individual hyperparameter to improve the overall accuracy for that specific model.
 
-On the hindsight, it is unclear if the architecture is truly the best option to take. As such, we will be doing an exploratory analysis using both models and evaluating their effectiveness. 
+To confirm our hypothesis, we did an exploratory analysis using both models and evaluate their effectiveness. 
+
+<u>**Empirical observations**</u>
+
+Methodology: We setup 2 notebooks to test the 3-class classifier and the 2 x binary cascade classifier. Within those notebooks, the same models are used for all. All parameters are set as their default values. The only tuning done is to tune the number of epochs to ensure that the models are not overfitted.
+
+The notebooks can be found at
+
+- 3-class classifier: `./notebooks/colab/experiments/architecture_selection/multi_class_classifier.ipynb`
+- 2 x binary classifiers: `./notebooks/colab/experiments/architecture_selection/naive_classifier.ipynb`
+
+**Result for 3-class classifier**
+
+Accuracy: 14/24 (58.3%)
+
+Confusion matrix:
+
+![](assets/proposed_model/01b_confusion_matrix.png)
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.87   | 0.37  | 0.50      |
+| Precision | 1.00   | 0.42  | 0.40      |
+| f1_score  | 0.93   | 0.39  | 0.44      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/architecture_selection/multi_net.txt`
+
+**Result for 2 x binary classifiers:**
+
+Accuracy: 14/24 (58.3%)
+
+Confusion matrix:
+
+![](assets/proposed_model/03b_confusion_matrix.png)
+
+|           | Normal | Covid | Non-covid |
+| --------- | ------ | ----- | --------- |
+| Recall    | 0.62   | 0.87  | 0.25      |
+| Precision | 1.00   | 0.46  | 0.50      |
+| f1_score  | 0.76   | 0.60  | 0.33      |
+
+The results for loss and accuracy on the train and test set during training can be found at
+
+- `./results/experiments/architecture_selection/naive_binary_L0_net.txt`
+- `./results/experiments/architecture_selection/naive_binary_L1_net.txt`
+
+**Conclusion**
+
+The results without any tuning of parameters for both architectures are largely equal. It is interesting the that multi-class one predicts normal classes better and the 2 x binary one predicts Covid better. Predicting Covid well aligns more with the desired outcomes of the model. Based on our hypothesis of the proposed advantages of the 2 x binary model, we will proceed with it and propose and tune models that aim to improve on the baseline scores above.
 
 ## 5.2 2 2 Binary classifiers architecture design
+
 ### 5.2.1 Referencing literature and traditional well-performing models
 
 Methodology

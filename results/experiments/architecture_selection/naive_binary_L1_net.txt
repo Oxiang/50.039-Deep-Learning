@@ -1,0 +1,4 @@
+Epoch: 1/4 - 21/03/2021 06:03:19 - Training Loss: 1.6751 - Training Accuracy: 0.6587 - Test Loss: 1.8034 - Test Accuracy: 0.6458
+Epoch: 2/4 - 21/03/2021 06:03:21 - Training Loss: 0.6242 - Training Accuracy: 0.7071 - Test Loss: 1.8305 - Test Accuracy: 0.6414
+Epoch: 3/4 - 21/03/2021 06:03:24 - Training Loss: 0.5860 - Training Accuracy: 0.7258 - Test Loss: 1.8151 - Test Accuracy: 0.6443
+Epoch: 4/4 - 21/03/2021 06:03:26 - Training Loss: 0.5325 - Training Accuracy: 0.7432 - Test Loss: 1.8130 - Test Accuracy: 0.6447
