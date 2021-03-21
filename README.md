@@ -444,10 +444,6 @@ With all other hyperparameters equal, it is found that weight decay of 0 has the
 
 ### 5.3.3 Learning rate
 
-**<u>Recommendation by literature</u>**
-
-
-
 **<u>Experimenting with different learning rates</u>**
 
 Log: results/experiments/tuning_layer_0_hyperparameters.log
@@ -512,11 +508,9 @@ In our final model, we will be using the stated parameter number as provided bas
 - Optimizer: AdamW
 - Learning Rate Scheduler: None
 
-**<u>Number of epochs</u>**
-
 ## 5.5 Implementing checkpoints
 
-Checkpoints are saved at every epoch to ensure that the models can be loaded for evaluation. In the event of crashing midway of training, the checkpoints can provide the state to continue training again.
+Checkpoints are saved at every epoch to ensure that the models can be loaded for evaluation. In the event of crashing midway during training, the checkpoints can provide the state to continue training again.
 
 The Checkpoint stores the following variables:
 
