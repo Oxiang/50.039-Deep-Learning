@@ -225,10 +225,12 @@ As the number of dataset is generally low, using the first architecture, 2 binar
 
 On the hindsight, it is unclear if the architecture is truly the best option to take. With the complementary dataset, it would increase the classes ratio and increase the class imbalance. As such, we have done a exploratory analysis using both models and evaluating their effectiveness. 
 
-From our findings, we found that the 3 class classifier does not perform as well as the binary class with a simple models. After 10 epochs, it garner a test accuracy of 0.6688. Thus, we decide to approach the problem with the 2 binary classifier approach.
+From our findings, we found that the 3 class classifier did not perform as well as the binary class with a simple models. After 10 epochs, it garner a test accuracy of 0.6688 and low recall scores. Thus, we decide to approach the problem with the 2 binary classifier approach.
 
 Log: results/experiments/simple_multiclass_net.txt
 >>>>>>> 24c5d2d... docs: updated hyperparameter choice
+
+Experimental model notebook: notebooks/experiments/multiclass_classifier.ipynb
 
 ## 5.2 2 2 Binary classifiers architecture design
 
@@ -524,7 +526,7 @@ There is slight improvement once the weights are added. Hence, these weights wil
 
 <u>**Adam vs AdamW theory**</u>
 
-The core difference between AdamW and Adam is the regularization pattern. For Adam, the weight decay ends up with the moving average while AdamW ensures that the regularization term does not, which make the regularization proportional to the weight itself.
+The core difference between AdamW and Adam is the regularization pattern. For Adam, the weight decay ends up with the moving average while AdamW ensures that the regularization term does not, which makes the regularization proportional to the weight itself.
 
 Experimentally, AdamW should yield better training loss and that the models generalize much better than models trained with Adam. 
 
@@ -537,11 +539,11 @@ Log: results/experiments/tuning_layer_0_hyperparameters.log
 | 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
 | 10     | 0.0001        | 0.1             | 0            | AdamW     | 0.7917        |
 
-From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam. However, this might be affected by the Dataloader random shuffle. Since the difference is small, we would pick AdamW as the optimizer. 
+From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam. However, this might be affected by the Dataloader random shuffle. We pick AdamW as the optimizer. 
 
 ### 5.3.2 Regularization - Weight Decay
 
-The weight decay parameter is use as a L2 regularization in the Adam optimizer. L2 regularization is used to alleviate overfitting of the model. 
+The weight decay parameter is used as a L2 regularization in the Adam optimizer. L2 regularization is used to alleviate overfitting of the model. 
 
 Log: results/experiments/tuning_layer_0_hyperparameters.log
 
@@ -550,7 +552,7 @@ Log: results/experiments/tuning_layer_0_hyperparameters.log
 | 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
 | 10     | 0.0001        | 0.1             | 0.005        | Adam      | 0.7823        |
 
-With all other hyperparameters equal, it is found that weight decay of 0.005 has a slightly higher test accuracy than the weight decay of 0. One advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0.005. 
+With all other hyperparameters equal, it is found that weight decay of 0.005 has a slightly higher test accuracy than the weight decay of 0. One advantage of having the weight decay is to prevent overfitting. We will be using decay weight of more than 0. 
 
 ### 5.3.3 Learning rate
 
@@ -566,7 +568,7 @@ Log file: layer_0_gridsearch.log
 | 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
 | 10     | 0.001         | 0.1             | 0            | Adam      | 0.7635        |
 
-From the experiment, we can see that reducing the learning rate by a factor of 10 drastically reduces the overall accuracy. One explanation could be that the reduced learning rate slows down the rate of convergence. This in turn reduces the accuracy of the model at the given epoch while having the same hyperparameters. 
+From the experiment, we can see that reducing the learning rate by a factor of 10, from 0.0001 to 0.00001, drastically reduces the overall accuracy. One explanation could be that the reduced learning rate slows down the rate of convergence. This in turn reduces the accuracy of the model at the given epoch while having the same hyperparameters. 
 
 At the same time, we can see that a learning rate of 0.001 has a lower accuracy. As such, we will be taking learning rate of 0.0001.
 
@@ -581,17 +583,17 @@ Under the hyperparameter folder, we have experimented with the scheduled learnin
 | 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
 | 10     | 0.0001        | 0.001           | 0            | Adam      | 0.7623        |
 
-From the table, we can see that there are hardly noticeable change in the accuracy. This could due to the low epoch count that makes the difference inconsequential. As such, we will not be using scheduler for the final model. 
+From the table, we can see that there are hardly noticeable change in the accuracy. This could due to the low epoch count that makes the implementation of scheduler inconsequential. As such, we will not be using scheduler for the final model. 
 
 ## 5.4 Model parameters
 
-In our final model, we will be using the experimented numbers as initial direction and proceed with **further fine-tuning** on the model.
+After fine-tuning to an even greater extend on top of our initial experiments, we have decided to pick the following parameters.
 
 **Layer 0**
 
 - Number of Epochs: 5
 - Learning Rate: 0.0001
-- Weight Decay: 0.0005
+- Weight Decay: 0.00001
 - Optimizer: AdamW
 - Learning Rate Scheduler: None
 
@@ -599,7 +601,7 @@ In our final model, we will be using the experimented numbers as initial directi
 
 - Number of Epochs : 35
 - Learning Rate: 0.0001
-- Weight Decay: 0.0005
+- Weight Decay: 0.00001
 - Optimizer: AdamW
 - Learning Rate Scheduler: None
 
