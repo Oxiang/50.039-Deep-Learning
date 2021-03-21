@@ -534,10 +534,10 @@ Experimentally, AdamW should yield better training loss and that the models gene
 
 Log: results/experiments/tuning_layer_0_hyperparameters.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | ------------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
-| 10     | 0.0001        | 0.1             | 0            | AdamW     | 0.7917        |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
+| 10     | 0.0001        | 1               | 0            | AdamW     | 0.8125        | 0.9700            | 0.9375         |
 
 From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam. However, this might be affected by the Dataloader random shuffle. We pick AdamW as the optimizer. 
 
@@ -547,12 +547,13 @@ The weight decay parameter is used as a L2 regularization in the Adam optimizer.
 
 Log: results/experiments/tuning_layer_0_hyperparameters.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | ------------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
-| 10     | 0.0001        | 0.1             | 0.005        | Adam      | 0.7823        |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
+| 10     | 0.0001        | 1               | 0.00001      | Adam      | 0.7870        | 0.9211            | 0.8125         |
+| 10     | 0.0001        | 1               | 0.01         | Adam      | 0.7729        | 0.9444            | 0.875          |
 
-With all other hyperparameters equal, it is found that weight decay of 0.005 has a slightly higher test accuracy than the weight decay of 0. One advantage of having the weight decay is to prevent overfitting. We will be using decay weight of more than 0. 
+With all other hyperparameters equal, it is found that both weight decay of 0.00001 and weight decay of 0.01 have a lower average precision and average recall than the weight decay of 0. However, one advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0. 
 
 ### 5.3.3 Learning rate
 
@@ -562,28 +563,26 @@ Log: results/experiments/tuning_layer_0_hyperparameters.log
 
 Log file: layer_0_gridsearch.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | ------------- |
-| 10     | 0.00001       | 0.1             | 0            | Adam      | 0.7031        |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
-| 10     | 0.001         | 0.1             | 0            | Adam      | 0.7635        |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
+| 10     | 0.00001       | 1               | 0            | Adam      | 0.8260        | 0.7945            | 0.7187         |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
+| 10     | 0.001         | 1               | 0            | Adam      | 0.7568        | 0.9063            | 0.9063         |
 
-From the experiment, we can see that reducing the learning rate by a factor of 10, from 0.0001 to 0.00001, drastically reduces the overall accuracy. One explanation could be that the reduced learning rate slows down the rate of convergence. This in turn reduces the accuracy of the model at the given epoch while having the same hyperparameters. 
-
-At the same time, we can see that a learning rate of 0.001 has a lower accuracy. As such, we will be taking learning rate of 0.0001.
+From the experiment, we can see that both the average precision and average recall for learning rate 0.00001 and 0.001 are lower than learning rate of 0.0001. Since we prioritize precision and recall, we will choose learning rate of 0.0001
 
 ### 5.3.4 Scheduled learning rate
 
 Log: results/experiments/tuning_layer_0_hyperparameters.log
 
-Under the hyperparameter folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [0.1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
+Under the hyperparameter folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | ------------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
-| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.7623        |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
+| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.7896        | 0.9444            | 0.875          |
 
-From the table, we can see that there are hardly noticeable change in the accuracy. This could due to the low epoch count that makes the implementation of scheduler inconsequential. As such, we will not be using scheduler for the final model. 
+From the table, we can see that scheduler gamma of 1 (no decay) has better average precision and average recall. As such we will not be using scheduled learning rate in our model.
 
 ## 5.4 Model parameters
 
