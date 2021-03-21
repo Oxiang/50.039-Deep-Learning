@@ -13,7 +13,7 @@ Epoch: 8/10 - 21/03/2021 18:33:58 -  Training Loss: 0.1701 -  Training Accuracy:
 Epoch: 9/10 - 21/03/2021 18:34:08 -  Training Loss: 0.1659 -  Training Accuracy: 0.9429 - Test Loss: 1.0001 -  Test Accuracy: 0.7693
 Epoch: 10/10 - 21/03/2021 18:34:18 -  Training Loss: 0.1627 -  Training Accuracy: 0.9415 - Test Loss: 0.7211 -  Test Accuracy: 0.8125
 {
-    "covid": {
+    "infected": {
         "f1_score": 0.9696969696969697,
         "precision": 0.9411764705882353,
         "recall": 1.0
@@ -38,7 +38,7 @@ Epoch: 8/10 - 21/03/2021 18:42:55 -  Training Loss: 0.1749 -  Training Accuracy:
 Epoch: 9/10 - 21/03/2021 18:43:05 -  Training Loss: 0.1681 -  Training Accuracy: 0.9398 - Test Loss: 0.7138 -  Test Accuracy: 0.7974
 Epoch: 10/10 - 21/03/2021 18:43:15 -  Training Loss: 0.1665 -  Training Accuracy: 0.9381 - Test Loss: 1.3598 -  Test Accuracy: 0.7495
 {
-    "covid": {
+    "infected": {
         "f1_score": 0.9696969696969697,
         "precision": 0.9411764705882353,
         "recall": 1.0
@@ -63,7 +63,7 @@ Epoch: 8/10 - 21/03/2021 18:46:23 -  Training Loss: 0.6092 -  Training Accuracy:
 Epoch: 9/10 - 21/03/2021 18:46:33 -  Training Loss: 0.5524 -  Training Accuracy: 0.8608 - Test Loss: 0.5453 -  Test Accuracy: 0.8130
 Epoch: 10/10 - 21/03/2021 18:46:43 -  Training Loss: 0.4826 -  Training Accuracy: 0.8633 - Test Loss: 0.5218 -  Test Accuracy: 0.8260
 {
-    "covid": {
+    "infected": {
         "f1_score": 0.8571428571428572,
         "precision": 0.7894736842105263,
         "recall": 0.9375
@@ -88,7 +88,7 @@ Epoch: 8/10 - 21/03/2021 18:48:37 -  Training Loss: 0.1016 -  Training Accuracy:
 Epoch: 9/10 - 21/03/2021 18:48:47 -  Training Loss: 0.0947 -  Training Accuracy: 0.9645 - Test Loss: 1.2858 -  Test Accuracy: 0.7281
 Epoch: 10/10 - 21/03/2021 18:48:56 -  Training Loss: 0.0878 -  Training Accuracy: 0.9691 - Test Loss: 2.0200 -  Test Accuracy: 0.7568
 {
-    "covid": {
+    "infected": {
         "f1_score": 0.9375,
         "precision": 0.9375,
         "recall": 0.9375
@@ -113,7 +113,7 @@ Epoch: 8/10 - 21/03/2021 18:51:20 -  Training Loss: 0.1630 -  Training Accuracy:
 Epoch: 9/10 - 21/03/2021 18:51:30 -  Training Loss: 0.1677 -  Training Accuracy: 0.9390 - Test Loss: 0.8121 -  Test Accuracy: 0.7812
 Epoch: 10/10 - 21/03/2021 18:51:40 -  Training Loss: 0.1650 -  Training Accuracy: 0.9394 - Test Loss: 0.8167 -  Test Accuracy: 0.7896
 {
-    "covid": {
+    "infected": {
         "f1_score": 0.9411764705882353,
         "precision": 0.8888888888888888,
         "recall": 1.0
@@ -138,7 +138,7 @@ Epoch: 8/10 - 21/03/2021 18:54:08 -  Training Loss: 0.1575 -  Training Accuracy:
 Epoch: 9/10 - 21/03/2021 18:54:18 -  Training Loss: 0.1525 -  Training Accuracy: 0.9410 - Test Loss: 0.8253 -  Test Accuracy: 0.8047
 Epoch: 10/10 - 21/03/2021 18:54:28 -  Training Loss: 0.1567 -  Training Accuracy: 0.9406 - Test Loss: 1.0446 -  Test Accuracy: 0.7870
 {
-    "covid": {
+    "infected": {
         "f1_score": 0.9142857142857143,
         "precision": 0.8421052631578947,
         "recall": 1.0
@@ -163,7 +163,7 @@ Epoch: 8/10 - 21/03/2021 18:59:33 -  Training Loss: 0.1728 -  Training Accuracy:
 Epoch: 9/10 - 21/03/2021 18:59:43 -  Training Loss: 0.1719 -  Training Accuracy: 0.9344 - Test Loss: 0.7496 -  Test Accuracy: 0.7948
 Epoch: 10/10 - 21/03/2021 18:59:53 -  Training Loss: 0.1726 -  Training Accuracy: 0.9363 - Test Loss: 1.0876 -  Test Accuracy: 0.7729
 {
-    "covid": {
+    "infected": {
         "f1_score": 0.9411764705882353,
         "precision": 0.8888888888888888,
         "recall": 1.0
