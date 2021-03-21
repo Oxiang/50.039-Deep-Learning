@@ -418,13 +418,17 @@ The results for loss and accuracy on the train and test set during training can 
 
 <u>**Adam vs AdamW theory**</u>
 
+The core difference between AdamW and Adam is the regularization pattern. For Adam, the weight decay ends up with the moving average while AdamW ensures that the regularization term does not, which make the regularization proportional to the weight itself.
+
+Experimentally, AdamW should yield better training loss and that the models generalize much better than models trained with Adam. 
+
 <u>**Adam vs AdamW empirical**</u>
 
 Log: results/experiments/tuning_layer_0_hyperparameters.log
 
 | Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
 | ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
 | 10     | 0.0001        | 0.1             | 0            | AdamW     | 0.9413   |
 
 From the table, we can see that with Adam optimizer, the accuracy is slightly higher than AdamW. However, this might be affected by the Dataloader random shuffle. Since the difference is small, we would pick Adam as the optimizer. 
@@ -437,14 +441,16 @@ Log: results/experiments/tuning_layer_0_hyperparameters.log
 
 | Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
 | ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
-| 10     | 0.0001        | 0.1             | 0.01         | Adam      | 0.9400   |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
+| 10     | 0.0001        | 0.1             | 0.005        | Adam      | 0.9468   |
 
-With all other hyperparameters equal, it is found that weight decay of 0 has a better accuracy than a weight decay of 0.01. One of the reason could be that there are still areas which the model could learn and the regularization slows down the convergences.
+With all other hyperparameters equal, it is found that weight decay of 0 has the same accuracy than a weight decay of 0.005. One advantage of having the weight is to prevent overfitting. Since both of the accuracy are roughly the same, we will be using decay weight of 0.005. 
 
 ### 5.3.3 Learning rate
 
 **<u>Recommendation by literature</u>**
+
+
 
 **<u>Experimenting with different learning rates</u>**
 
@@ -454,10 +460,28 @@ Log file: layer_0_gridsearch.log
 
 | Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
 | ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
-| 10     | 0.00001       | 0.1             | 0            | Adam      | 0.8823   |
+| 10     | 0.00001       | 0.1             | 0            | Adam      | 0.8696   |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
+| 10     | 0.001         | 0.1             | 0            | Adam      | 0.9688   |
 
-From the experiment, we can see that reducing the learning rate by a factor of 10 drastically reduces the overall accuracy. One explanation could be that the reduced learning rate slows down the rate of convergence. This in turn reduces the accuracy of the model at the given epoch while having the same hyperparameters. For the final model, we will be using learning rate of 0.0001 for better results. 
+From the experiment, we can see that reducing the learning rate by a factor of 10 drastically reduces the overall accuracy. One explanation could be that the reduced learning rate slows down the rate of convergence. This in turn reduces the accuracy of the model at the given epoch while having the same hyperparameters. 
+
+At the same time, we can see that a learning rate of 0.001 has a higher accuracy. However, as we look closer to the training logs, it can be seen that it is overfitting as the training loss increases even when the training accuracy decreases. As such, we will be taking learning rate of 0.0001.
+
+| Epoch | Training Accuracy | Test Loss |
+| ----- | ----------------- | --------- |
+| 1     | 0.8209            | 1.1383    |
+| 2     | 0.9201            | 0.8361    |
+| 3     | 0.9377            | 0.6164    |
+| 4     | 0.9494            | 0.7095    |
+| 5     | 0.9553            | 1.0498    |
+| 6     | 0.9659            | 1.2475    |
+| 7     | 0.9678            | 1.2539    |
+| 8     | 0.9657            | 1.2458    |
+| 9     | 0.9672            | 1.3407    |
+| 10    | 0.9688            | 1.2613    |
+
+
 
 ### 5.3.4 Scheduled learning rate
 
@@ -468,7 +492,7 @@ Under the hyperparameter folder, we have experimented with the scheduled learnin
 | Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
 | ------ | ------------- | --------------- | ------------ | --------- | -------- |
 | 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
-| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.9434   |
+| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.9346   |
 
 From the table, we can see that there are hardly noticeable change in the accuracy. This could due to the low epoch count that makes the difference inconsequential. As such, we will not be using scheduler for the final model. 
 
@@ -479,6 +503,18 @@ From the table, we can see that there are hardly noticeable change in the accura
 Epoch was used as one of the GridSearch parameter to determine the effect of the hyperparameter on the model. In general, at epochs testing of [5, 10], with a general trend of higher accuracy at higher epochs. This could mean that there are still areas which the model could learn from the training dataset.
 
 ## 5.5 Implementing checkpoints
+
+Checkpoints are saved at every epoch to ensure that the models can be loaded for evaluation. In the event of crashing midway of training, the checkpoints can provide the state to continue training again.
+
+The Checkpoint stores the following variables:
+
+- Current epochs
+- Model state dict
+- Optimizer state dict
+- training loss
+- test loss
+- test accuracy
+- training accuracy
 
 # 6. Model Summary <a name="MODEL2"></a>
 
