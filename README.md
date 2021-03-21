@@ -45,6 +45,10 @@ Students:
       |_ checkpoint_model_10_binary_L1_net_21_03_2021_20_39_57 # layer 1 model
     |_ tuning
       |_ Hyperparameters Experiment.ipynb
+  |_ local
+    |_ final
+      |_ test_binary_classifier_model.ipynb
+      |_ train_binary_classifier_model.ipynb
   |_ references
     |_ custom_dataset_dataloader_demo.ipynb
 - instructions # contains the small project instructions 
@@ -55,6 +59,8 @@ README.md # contains the overview of the project and explanations for the differ
 # 3. Final files and instructions on running them <a name="INSTRUCTIONS"></a>
 
 ## 3.1 Training the final model
+
+The file for this can be found in `./notebooks/local/final/train_binary_classifier_model.ipynb`
 
 To train the final model from scratch, simply follow the steps provided below:
 
@@ -69,6 +75,8 @@ Step 2. Open **train_binary_classifier_model.ipynb** in Jupyter Notebook
 Step 3. Run every cells
 
 ## 3.2 Loading and testing the trained model
+
+The file for this can be found in `./notebooks/local/final/test_binary_classifier_model.ipynb`
 
 <u>**Running on Jupyter Notebook locally**</u>
 
