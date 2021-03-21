@@ -29,7 +29,23 @@ Students:
       |_ custom_dataset_dataloader_cascade.ipynb
       |_ custom_dataset_dataloader.ipynb
     |_ experiments
+      |_ batch_size
+        |_ COVINet_classifier.ipynb
+      |_ binary_selection
+        |_ COVINet_classifier.ipynb
+        |_ naive_classifier.ipynb
+        |_ resnet_classifier.ipynb
+      |_ cross_entropy_weights
+      	|_ COVINet_classifier.ipynb
     |_ final
+      |_ binary_classifier_model.ipynb
+      |_ train_binary_classifier_model.ipynb
+      |_ test_binary_classifier_model.ipynb
+      |_ binary_classifier_log.txt
+      |_ checkpoint_model_5_binary_L0_net_21_03_2021_20_42_56
+      |_ checkpoint_model_10_binary_L1_net_21_03_2021_20_39_57
+    |_ tuning
+      |_ Hyperparameters Experiment.ipynb
   |_ references
     |_ custom_dataset_dataloader_demo.ipynb
 - instructions # contains the small project instructions 
@@ -49,7 +65,7 @@ Step 1. Move to the folder
 cd notebooks/colab/final
 ```
 
-Step 2. Open **binary_classifier_model.ipynb** in Jupyter Notebook
+Step 2. Open **binary_classifier_model.ipynb** in Jupyter Notebook or Colab
 
 ## 3.2 Training the final model
 
@@ -61,7 +77,7 @@ Step 1. Move to the folder
 cd notebooks/colab/final
 ```
 
-Step 2. Open **train_binary_classifier_model.ipynb** in Jupyter Notebook
+Step 2. Open **train_binary_classifier_model.ipynb** in Jupyter Notebook or Colab
 
 Step 3. Run every cells
 
@@ -75,11 +91,11 @@ Step 1. Move to the folder
 cd notebooks/colab/final
 ```
 
-Step 2. Open **test_binary_classifier_model.ipynb** in Jupyter Notebook
+Step 2. Open **test_binary_classifier_model.ipynb** in Jupyter Notebook or Colab
 
 Step 3. Run every cells
 
-
+The logs for the pre-trained model can be found in the same folder: **binary_classifier_log.txt**
 
 # 4. Data analysis <a name="DA"></a>
 
