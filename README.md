@@ -431,7 +431,7 @@ Log: results/experiments/tuning_layer_0_hyperparameters.log
 | 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
 | 10     | 0.0001        | 0.1             | 0            | AdamW     | 0.9413   |
 
-From the table, we can see that with Adam optimizer, the accuracy is slightly higher than AdamW. However, this might be affected by the Dataloader random shuffle. Since the difference is small, we would pick Adam as the optimizer. 
+From the table, we can see that with Adam optimizer, the accuracy is slightly higher than AdamW. However, this might be affected by the Dataloader random shuffle. Since the difference is small, we would pick AdamW as the optimizer. 
 
 ### 5.3.2 Regularization - Weight Decay
 
@@ -498,9 +498,25 @@ From the table, we can see that there are hardly noticeable change in the accura
 
 ## 5.4 Model parameters
 
-**<u>Number of epochs</u>**
+In our final model, we will be using the stated parameter number as provided based on the initial hyperparameter experimentation and **further fine-tuning**.
 
-Epoch was used as one of the GridSearch parameter to determine the effect of the hyperparameter on the model. In general, at epochs testing of [5, 10], with a general trend of higher accuracy at higher epochs. This could mean that there are still areas which the model could learn from the training dataset.
+**Layer 0**
+
+- Number of Epochs: 5
+- Learning Rate: 0.0001
+- Weight Decay: 0.0005
+- Optimizer: AdamW
+- Learning Rate Scheduler: None
+
+**Layer 1**
+
+- Number of Epochs : 35
+- Learning Rate: 0.0001
+- Weight Decay: 0.0005
+- Optimizer: AdamW
+- Learning Rate Scheduler: None
+
+**<u>Number of epochs</u>**
 
 ## 5.5 Implementing checkpoints
 
