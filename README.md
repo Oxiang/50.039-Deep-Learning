@@ -39,7 +39,19 @@ README.md # contains the overview of the project and explanations for the differ
 
 # 3. Final files and instructions on running them <a name="INSTRUCTIONS"></a>
 
-## 3.1 Training the final model
+## 3.1 Inspect the final model
+
+To Inspect the final model, simply follow the steps provided below:
+
+Step 1. Move to the folder
+
+```shell
+cd notebooks/colab/final
+```
+
+Step 2. Open **binary_classifier_model.ipynb** in Jupyter Notebook
+
+## 3.2 Training the final model
 
 To train the final model from scratch, simply follow the steps provided below:
 
@@ -49,11 +61,11 @@ Step 1. Move to the folder
 cd notebooks/colab/final
 ```
 
-Step 2. Open binary_classifier_model.ipynb in Jupyter Notebook
+Step 2. Open **train_binary_classifier_model.ipynb** in Jupyter Notebook
 
-Step 3. Run every cells **EXCEPT** for category 8.2.1
+Step 3. Run every cells
 
-## 3.2 Loading and testing the trained model
+## 3.3 Loading and testing the trained model
 
 The pre-trained weights are stored in the same folder as the final model. Follow the steps to recreate the testing model.
 
@@ -63,9 +75,9 @@ Step 1. Move to the folder
 cd notebooks/colab/final
 ```
 
-Step 2. Open binary_classifier_model.ipynb in Jupyter Notebook
+Step 2. Open **test_binary_classifier_model.ipynb** in Jupyter Notebook
 
-Step 3. Run every cells **EXCEPT** for category 8.1.1, 8.2.1, 9.1 and 9.2
+Step 3. Run every cells
 
 
 
@@ -132,7 +144,7 @@ Taking the same values as reference, if we divide by 255, for a value of 100,  $
 
 ## 4.4 Other potential pre-processing operations
 
-Form the plot below, which is based on the Training set for normal images as reference, it is evident that there are several differences in the photo dimensions and photo environment. 
+From the plot below, which is based on the Training set for normal images as reference, it is evident that there are several differences in the photo dimensions and photo environment. 
 
 ![](assets/data_analysis/04_pre_process.png)
 
