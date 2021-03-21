@@ -1,4 +1,4 @@
-21_03_2021_12_15_45 : Training L0 model - epochs 5 - lr 0.0001 - scheduler_gamma 0.1 - weight_decay - 0 - use_adam True 
+	21_03_2021_12_15_45 : Training L0 model - epochs 5 - lr 0.0001 - scheduler_gamma 0.1 - weight_decay - 0 - use_adam True 
 Epoch: 1/5 - 21/03/2021 12:16:24 - Training Loss: 0.6263 - Training Accuracy: 0.6727 - Test Loss: 0.4531 - Test Accuracy: 0.7885
 
 Epoch: 2/5 - 21/03/2021 12:16:32 - Training Loss: 0.3007 - Training Accuracy: 0.8846 - Test Loss: 0.5790 - Test Accuracy: 0.8099
