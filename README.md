@@ -29,7 +29,23 @@ Students:
       |_ custom_dataset_dataloader_cascade.ipynb
       |_ custom_dataset_dataloader.ipynb
     |_ experiments
+      |_ batch_size
+        |_ COVINet_classifier.ipynb
+      |_ binary_selection
+        |_ COVINet_classifier.ipynb
+        |_ naive_classifier.ipynb
+        |_ resnet_classifier.ipynb
+      |_ cross_entropy_weights
+      	|_ COVINet_classifier.ipynb
     |_ final
+      |_ binary_classifier_model.ipynb
+      |_ train_binary_classifier_model.ipynb
+      |_ test_binary_classifier_model.ipynb
+      |_ binary_classifier_log.txt
+      |_ checkpoint_model_5_binary_L0_net_21_03_2021_20_42_56
+      |_ checkpoint_model_10_binary_L1_net_21_03_2021_20_39_57
+    |_ tuning
+      |_ Hyperparameters Experiment.ipynb
   |_ references
     |_ custom_dataset_dataloader_demo.ipynb
 - instructions # contains the small project instructions 
@@ -39,7 +55,19 @@ README.md # contains the overview of the project and explanations for the differ
 
 # 3. Final files and instructions on running them <a name="INSTRUCTIONS"></a>
 
-## 3.1 Training the final model
+## 3.1 Inspect the final model
+
+To Inspect the final model, simply follow the steps provided below:
+
+Step 1. Move to the folder
+
+```shell
+cd notebooks/colab/final
+```
+
+Step 2. Open **binary_classifier_model.ipynb** in Jupyter Notebook or Colab
+
+## 3.2 Training the final model
 
 To train the final model from scratch, simply follow the steps provided below:
 
@@ -49,11 +77,11 @@ Step 1. Move to the folder
 cd notebooks/colab/final
 ```
 
-Step 2. Open binary_classifier_model.ipynb in Jupyter Notebook
+Step 2. Open **train_binary_classifier_model.ipynb** in Jupyter Notebook or Colab
 
-Step 3. Run every cells **EXCEPT** for category 8.2.1
+Step 3. Run every cells
 
-## 3.2 Loading and testing the trained model
+## 3.3 Loading and testing the trained model
 
 The pre-trained weights are stored in the same folder as the final model. Follow the steps to recreate the testing model.
 
@@ -63,11 +91,11 @@ Step 1. Move to the folder
 cd notebooks/colab/final
 ```
 
-Step 2. Open binary_classifier_model.ipynb in Jupyter Notebook
+Step 2. Open **test_binary_classifier_model.ipynb** in Jupyter Notebook or Colab
 
-Step 3. Run every cells **EXCEPT** for category 8.1.1, 8.2.1, 9.1 and 9.2
+Step 3. Run every cells
 
-
+The logs for the pre-trained model can be found in the same folder: **binary_classifier_log.txt**
 
 # 4. Data analysis <a name="DA"></a>
 
@@ -132,7 +160,7 @@ Taking the same values as reference, if we divide by 255, for a value of 100,  $
 
 ## 4.4 Other potential pre-processing operations
 
-Form the plot below, which is based on the Training set for normal images as reference, it is evident that there are several differences in the photo dimensions and photo environment. 
+From the plot below, which is based on the Training set for normal images as reference, it is evident that there are several differences in the photo dimensions and photo environment. 
 
 ![](assets/data_analysis/04_pre_process.png)
 
@@ -166,6 +194,7 @@ The 2 x binary classifiers is more specific and tackles 2 sequential binary clas
 
 **<u>Why we chose the 2 binary classifier approach</u>**
 
+<<<<<<< HEAD
 As the number of dataset is generally low, using the first architecture, 2 binary classifier, would allow us to tap onto complementary datasets to train each of the models (for example, the number of infected cases comprises the covid and non covid cases, effectively "increasing" the training data for infected). Furthermore, having two layers will allow the flexibility to tune individual hyperparameter to improve the overall accuracy for that specific model.
 
 To confirm our hypothesis, we did an exploratory analysis using both models and evaluate their effectiveness. 
@@ -514,97 +543,79 @@ There is slight improvement once the weights are added. Hence, these weights wil
 
 <u>**Adam vs AdamW theory**</u>
 
-The core difference between AdamW and Adam is the regularization pattern. For Adam, the weight decay ends up with the moving average while AdamW ensures that the regularization term does not, which make the regularization proportional to the weight itself.
+The core difference between AdamW and Adam is the regularization pattern. For Adam, the weight decay ends up with the moving average while AdamW ensures that the regularization term does not, which makes the regularization proportional to the weight itself.
 
 Experimentally, AdamW should yield better training loss and that the models generalize much better than models trained with Adam. 
 
 <u>**Adam vs AdamW empirical**</u>
 
-Log: results/experiments/tuning_layer_0_hyperparameters.log
+Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
-| 10     | 0.0001        | 0.1             | 0            | AdamW     | 0.9413   |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
+| 10     | 0.0001        | 1               | 0            | AdamW     | 0.8125        | 0.9700            | 0.9375         |
 
-From the table, we can see that with Adam optimizer, the accuracy is slightly higher than AdamW. However, this might be affected by the Dataloader random shuffle. Since the difference is small, we would pick AdamW as the optimizer. 
+From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam in layer 0. However, this might be affected by the Dataloader random shuffle. We pick AdamW as the optimizer for layer 0 for initial fine tuning. 
 
 ### 5.3.2 Regularization - Weight Decay
 
-The weight decay parameter is use as a L2 regularization in the Adam optimizer. L2 regularization is used to alleviate overfitting of the model. 
+The weight decay parameter is used as a L2 regularization in the Adam optimizer. L2 regularization is used to alleviate overfitting of the model. 
 
-Log: results/experiments/tuning_layer_0_hyperparameters.log
+Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
-| 10     | 0.0001        | 0.1             | 0.005        | Adam      | 0.9468   |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
+| 10     | 0.0001        | 1               | 0.00001      | Adam      | 0.7870        | 0.9211            | 0.8125         |
+| 10     | 0.0001        | 1               | 0.01         | Adam      | 0.7729        | 0.9444            | 0.875          |
 
-With all other hyperparameters equal, it is found that weight decay of 0 has the same accuracy than a weight decay of 0.005. One advantage of having the weight is to prevent overfitting. Since both of the accuracy are roughly the same, we will be using decay weight of 0.005. 
+With all other hyperparameters equal, it is found that both weight decay of 0.00001 and weight decay of 0.01 have a lower average precision and average recall than the weight decay of 0. However, one advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0.1 instead for initial fine tuning. 
 
 ### 5.3.3 Learning rate
 
 **<u>Experimenting with different learning rates</u>**
 
-Log: results/experiments/tuning_layer_0_hyperparameters.log
+Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
-Log file: layer_0_gridsearch.log
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
+| 10     | 0.00001       | 1               | 0            | Adam      | 0.8260        | 0.7945            | 0.7187         |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
+| 10     | 0.001         | 1               | 0            | Adam      | 0.7568        | 0.9063            | 0.9063         |
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.00001       | 0.1             | 0            | Adam      | 0.8696   |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
-| 10     | 0.001         | 0.1             | 0            | Adam      | 0.9688   |
-
-From the experiment, we can see that reducing the learning rate by a factor of 10 drastically reduces the overall accuracy. One explanation could be that the reduced learning rate slows down the rate of convergence. This in turn reduces the accuracy of the model at the given epoch while having the same hyperparameters. 
-
-At the same time, we can see that a learning rate of 0.001 has a higher accuracy. However, as we look closer to the training logs, it can be seen that it is overfitting as the training loss increases even when the training accuracy decreases. As such, we will be taking learning rate of 0.0001.
-
-| Epoch | Training Accuracy | Test Loss |
-| ----- | ----------------- | --------- |
-| 1     | 0.8209            | 1.1383    |
-| 2     | 0.9201            | 0.8361    |
-| 3     | 0.9377            | 0.6164    |
-| 4     | 0.9494            | 0.7095    |
-| 5     | 0.9553            | 1.0498    |
-| 6     | 0.9659            | 1.2475    |
-| 7     | 0.9678            | 1.2539    |
-| 8     | 0.9657            | 1.2458    |
-| 9     | 0.9672            | 1.3407    |
-| 10    | 0.9688            | 1.2613    |
-
-
+From the experiment, we can see that both the average precision and average recall for learning rate 0.00001 and 0.001 are lower than learning rate of 0.0001. Since we prioritize precision and recall, we will choose learning rate of 0.0001 for initial fine tuning.
 
 ### 5.3.4 Scheduled learning rate
 
-Log: results/experiments/tuning_layer_0_hyperparameters.log
+Log: results/experiments/final_tuning_layer_0_hyperparameters.log
 
-Under the hyperparameter folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [0.1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
+Under the hyperparameter folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
-| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.9346   |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy | Average Precision | Average Recall |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- | ----------------- | -------------- |
+| 10     | 0.0001        | 1               | 0            | Adam      | 0.7495        | 0.9700            | 0.9375         |
+| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.7896        | 0.9444            | 0.875          |
 
-From the table, we can see that there are hardly noticeable change in the accuracy. This could due to the low epoch count that makes the difference inconsequential. As such, we will not be using scheduler for the final model. 
+From the table, we can see that scheduler gamma of 1 (no decay) has better average precision and average recall. As such we will not be using scheduled learning rate in our model for initial fine tuning.
 
 ## 5.4 Model parameters
 
-In our final model, we will be using the stated parameter number as provided based on the initial hyperparameter experimentation and **further fine-tuning**.
+After further fine-tuning to an even greater extend on top of our initial experimental values, we have decided to pick the following parameters.
 
 **Layer 0**
 
 - Number of Epochs: 5
-- Learning Rate: 0.0001
-- Weight Decay: 0.0005
+- Learning Rate: 0.001
+- Weight Decay: 0
 - Optimizer: AdamW
 - Learning Rate Scheduler: None
 
 **Layer 1**
 
-- Number of Epochs : 35
-- Learning Rate: 0.0001
-- Weight Decay: 0.0005
+- Number of Epochs : 10
+- Learning Rate: 0.001
+- Weight Decay: 0.00001
 - Optimizer: AdamW
 - Learning Rate Scheduler: None
 
@@ -632,25 +643,83 @@ Recapitulation
 
 Loss vs epochs
 
+**Layer 0**
+
+![](assets/final/layer_0_loss_epoch.PNG)
+
+**Layer 1**
+
+![](assets/final/layer_1_loss_epoch.PNG)
+
 Accuracy vs epochs
+
+**Layer 0**
+
+![](assets/final/layer_0_acc_epoch.PNG)
+
+**Layer 1**
+
+![](assets/final/layer_1_acc_epoch.PNG)
 
 ## 7.2 Key metrics and considerations
 
 <u>**Confusion matrix**</u>
 
-<u>**Recall and precision**</u>
+Combined Accuracy: 0.7916666666666666
 
-<u>**F1 score**</u>
+![](assets/final/confusion_matrix.PNG)
+
+<u>**Recall, Precision and F1 Score**</u>
+
+|           | Precision          | Recall | F1 Score           |
+| --------- | ------------------ | ------ | ------------------ |
+| COVID     | 0.6153846153846154 | 1.0    | 0.761904761904762  |
+| non-COVID | 1.0                | 0.5    | 0.6666666666666666 |
+| Normal    | 1.0                | 0.875  | 0.9333333333333333 |
 
 ## 7.3 Accuracy and image diagrams
 
+![](assets/final/diagram_1.PNG)
+
+![](assets/final/diagram_2.PNG)
+
+![](assets/final/diagram_3.PNG)
+
+![](assets/final/diagram_4.PNG)
+
 ## 7.4 Investigating failures with feature maps
+
+![](assets/final/misclassified_1.PNG)
+
+The validation image above (normal) was misclassified as an infected-COVID. We can see from above that the misclassified image has very similar feature map as a correctly classified infected-COVID image. From here, we can deduce that any feature maps that have close resemblance to the respective classes' feature map will most likely to be classified under that particular class.
+
+![](assets/final/classified_1.PNG)
 
 # 8. Challenges of predictions <a name="CHALLENGE"></a>
 
 ## 8.1 Differentiating covid and non-covid
 
+One of the toughest problem for differentiating COVID vs non-COVID was to determine the best architecture to use for this classification task. In this case, we had to choose either the 3-class classification or the binary classification approach. Besides the theocratical knowledge, it was not clear which model was best suited in this case. Since both are logical in terms of classifying, there was a need to conduct experiments to explore the advantages and disadvantages pertaining to each architecture. 
+
 # 9. Overall - what is the better model, accuracy vs low true negatives/false positives rates on certain classes <a name="OVERALL"></a>
+
+Precision = $\frac{tp}{tp + fp}$
+
+Recall (also Sensitivity) = $\frac{tp}{tp + fn}$
+
+Specificity = $\frac{tn}{tn + fp}$
+
+For this project, the metrics can be applied differently considering the needs of different stakeholders.
+
+**Considering Covid, we cite 2 stakeholders who could have different concerns**
+
+For example, the general public could be concerned about the spread of the virus, hence, they could be more worried about Recall because false negatives could mean that people with the virus in the public space and mingling with others.
+
+On the other hand, the clinicans could be more concerned about Precision. This is because there are limited hospital beds and it would be a waste of resources to allocated scarce resource to people who do not have covid but were predicted to have covid. This can be a problem if there is a model that predicts everyone to have covid. While this model successfully identifies all covid cases, there will be a lot of people who do not actually have covid being admitted to the hospitals for tratement. This puts a strain on resources.
+
+Similarly, they would be interested in high specificity which is the percentage of people who are predicted negative among all the predicitions cases who are truly negative. A higher value for this would similarly reduce the strain of hospital resources as it implies that those who really do not have covid are likely predicted as not having covid and will not need treatment.
+
+For the analysis below we focus on `recall` as there was a time when the world was focused on containing the spread of covid which is aligned with the saying that "prevention is better than cure". We also output `precision` and the `f1` score to consider that other stakeholders are important as well.
 
 
 # 10. How doctors diagnose infections based on x-rays. <a name="DOCTORS"></a>

@@ -1,0 +1,36 @@
+Layer 0
+Epoch: 1/5 - 21/03/2021 20:43:06 -  Training Loss: 0.1162 -  Training Accuracy: 0.9599 Test Loss: 1.5263 -  Test Accuracy: 0.7724
+Epoch: 2/5 - 21/03/2021 20:43:16 -  Training Loss: 0.1099 -  Training Accuracy: 0.9613 Test Loss: 1.6183 -  Test Accuracy: 0.7484
+Epoch: 3/5 - 21/03/2021 20:43:26 -  Training Loss: 0.1055 -  Training Accuracy: 0.9620 Test Loss: 0.6899 -  Test Accuracy: 0.8307
+Epoch: 4/5 - 21/03/2021 20:43:35 -  Training Loss: 0.0984 -  Training Accuracy: 0.9638 Test Loss: 1.3734 -  Test Accuracy: 0.7839
+Epoch: 5/5 - 21/03/2021 20:43:45 -  Training Loss: 0.0902 -  Training Accuracy: 0.9666 Test Loss: 1.3943 -  Test Accuracy: 0.7729
+
+Layer 1
+Epoch: 1/10 - 21/03/2021 20:40:04 -  Training Loss: 0.6921 -  Training Accuracy: 0.5441 Test Loss: 0.5832 -  Test Accuracy: 0.8092
+Epoch: 2/10 - 21/03/2021 20:40:10 -  Training Loss: 0.6362 -  Training Accuracy: 0.6763 Test Loss: 0.5217 -  Test Accuracy: 0.7028
+Epoch: 3/10 - 21/03/2021 20:40:17 -  Training Loss: 0.6119 -  Training Accuracy: 0.6892 Test Loss: 0.4336 -  Test Accuracy: 0.8824
+Epoch: 4/10 - 21/03/2021 20:40:23 -  Training Loss: 0.5860 -  Training Accuracy: 0.7116 Test Loss: 0.3704 -  Test Accuracy: 0.9055
+Epoch: 5/10 - 21/03/2021 20:40:29 -  Training Loss: 0.5739 -  Training Accuracy: 0.7252 Test Loss: 0.4126 -  Test Accuracy: 0.8783
+Epoch: 6/10 - 21/03/2021 20:40:36 -  Training Loss: 0.5730 -  Training Accuracy: 0.7220 Test Loss: 0.3634 -  Test Accuracy: 0.9003
+Epoch: 7/10 - 21/03/2021 20:40:43 -  Training Loss: 0.5609 -  Training Accuracy: 0.7278 Test Loss: 0.3854 -  Test Accuracy: 0.9029
+Epoch: 8/10 - 21/03/2021 20:40:50 -  Training Loss: 0.5540 -  Training Accuracy: 0.7371 Test Loss: 0.3870 -  Test Accuracy: 0.9029
+Epoch: 9/10 - 21/03/2021 20:40:57 -  Training Loss: 0.5451 -  Training Accuracy: 0.7370 Test Loss: 0.3794 -  Test Accuracy: 0.9029
+Epoch: 10/10 - 21/03/2021 20:41:05 -  Training Loss: 0.5390 -  Training Accuracy: 0.7416 Test Loss: 0.4007 -  Test Accuracy: 0.8795
+
+{
+    "covid": {
+        "f1_score": 0.761904761904762,
+        "precision": 0.6153846153846154,
+        "recall": 1.0
+    },
+    "non-covid": {
+        "f1_score": 0.6666666666666666,
+        "precision": 1.0,
+        "recall": 0.5
+    },
+    "normal": {
+        "f1_score": 0.9333333333333333,
+        "precision": 1.0,
+        "recall": 0.875
+    }
+}
