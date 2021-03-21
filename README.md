@@ -166,6 +166,7 @@ The 2 x binary classifiers is more specific and tackles 2 sequential binary clas
 
 **<u>Why we chose the 2 binary classifier approach</u>**
 
+<<<<<<< HEAD
 As the number of dataset is generally low, using the first architecture, 2 binary classifier, would allow us to tap onto complementary datasets to train each of the models (for example, the number of infected cases comprises the covid and non covid cases, effectively "increasing" the training data for infected). Furthermore, having two layers will allow the flexibility to tune individual hyperparameter to improve the overall accuracy for that specific model.
 
 To confirm our hypothesis, we did an exploratory analysis using both models and evaluate their effectiveness. 
@@ -219,6 +220,15 @@ The results for loss and accuracy on the train and test set during training can 
 **Conclusion**
 
 The results without any tuning of parameters for both architectures are largely equal. It is interesting the that multi-class one predicts normal classes better and the 2 x binary one predicts Covid better. Predicting Covid well aligns more with the desired outcomes of the model. Based on our hypothesis of the proposed advantages of the 2 x binary model, we will proceed with it and propose and tune models that aim to improve on the baseline scores above.
+=======
+As the number of dataset is generally low, using the first architecture, 2 binary classifier, would allow us to tap onto complementary datasets to train each of the models. Furthermore, having two layers will allow the flexibility to tune individual hyperparameter to improve the overall accuracy for that specific model.
+
+On the hindsight, it is unclear if the architecture is truly the best option to take. With the complementary dataset, it would increase the classes ratio and increase the class imbalance. As such, we have done a exploratory analysis using both models and evaluating their effectiveness. 
+
+From our findings, we found that the 3 class classifier does not perform as well as the binary class with a simple models. After 10 epochs, it garner a test accuracy of 0.6688. Thus, we decide to approach the problem with the 2 binary classifier approach.
+
+Log: results/experiments/simple_multiclass_net.txt
+>>>>>>> 24c5d2d... docs: updated hyperparameter choice
 
 ## 5.2 2 2 Binary classifiers architecture design
 
@@ -522,12 +532,12 @@ Experimentally, AdamW should yield better training loss and that the models gene
 
 Log: results/experiments/tuning_layer_0_hyperparameters.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
-| 10     | 0.0001        | 0.1             | 0            | AdamW     | 0.9413   |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
+| 10     | 0.0001        | 0.1             | 0            | AdamW     | 0.7917        |
 
-From the table, we can see that with Adam optimizer, the accuracy is slightly higher than AdamW. However, this might be affected by the Dataloader random shuffle. Since the difference is small, we would pick AdamW as the optimizer. 
+From the table, we can see that with AdamW optimizer, the test accuracy is slightly higher than Adam. However, this might be affected by the Dataloader random shuffle. Since the difference is small, we would pick AdamW as the optimizer. 
 
 ### 5.3.2 Regularization - Weight Decay
 
@@ -535,12 +545,12 @@ The weight decay parameter is use as a L2 regularization in the Adam optimizer. 
 
 Log: results/experiments/tuning_layer_0_hyperparameters.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
-| 10     | 0.0001        | 0.1             | 0.005        | Adam      | 0.9468   |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
+| 10     | 0.0001        | 0.1             | 0.005        | Adam      | 0.7823        |
 
-With all other hyperparameters equal, it is found that weight decay of 0 has the same accuracy than a weight decay of 0.005. One advantage of having the weight is to prevent overfitting. Since both of the accuracy are roughly the same, we will be using decay weight of 0.005. 
+With all other hyperparameters equal, it is found that weight decay of 0.005 has a slightly higher test accuracy than the weight decay of 0. One advantage of having the weight decay is to prevent overfitting. We will be using decay weight of 0.005. 
 
 ### 5.3.3 Learning rate
 
@@ -550,30 +560,15 @@ Log: results/experiments/tuning_layer_0_hyperparameters.log
 
 Log file: layer_0_gridsearch.log
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.00001       | 0.1             | 0            | Adam      | 0.8696   |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9468   |
-| 10     | 0.001         | 0.1             | 0            | Adam      | 0.9688   |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- |
+| 10     | 0.00001       | 0.1             | 0            | Adam      | 0.7031        |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
+| 10     | 0.001         | 0.1             | 0            | Adam      | 0.7635        |
 
 From the experiment, we can see that reducing the learning rate by a factor of 10 drastically reduces the overall accuracy. One explanation could be that the reduced learning rate slows down the rate of convergence. This in turn reduces the accuracy of the model at the given epoch while having the same hyperparameters. 
 
-At the same time, we can see that a learning rate of 0.001 has a higher accuracy. However, as we look closer to the training logs, it can be seen that it is overfitting as the training loss increases even when the training accuracy decreases. As such, we will be taking learning rate of 0.0001.
-
-| Epoch | Training Accuracy | Test Loss |
-| ----- | ----------------- | --------- |
-| 1     | 0.8209            | 1.1383    |
-| 2     | 0.9201            | 0.8361    |
-| 3     | 0.9377            | 0.6164    |
-| 4     | 0.9494            | 0.7095    |
-| 5     | 0.9553            | 1.0498    |
-| 6     | 0.9659            | 1.2475    |
-| 7     | 0.9678            | 1.2539    |
-| 8     | 0.9657            | 1.2458    |
-| 9     | 0.9672            | 1.3407    |
-| 10    | 0.9688            | 1.2613    |
-
-
+At the same time, we can see that a learning rate of 0.001 has a lower accuracy. As such, we will be taking learning rate of 0.0001.
 
 ### 5.3.4 Scheduled learning rate
 
@@ -581,16 +576,16 @@ Log: results/experiments/tuning_layer_0_hyperparameters.log
 
 Under the hyperparameter folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [0.1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
 
-| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
-| ------ | ------------- | --------------- | ------------ | --------- | -------- |
-| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
-| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.9346   |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Test Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | ------------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.7734        |
+| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.7623        |
 
 From the table, we can see that there are hardly noticeable change in the accuracy. This could due to the low epoch count that makes the difference inconsequential. As such, we will not be using scheduler for the final model. 
 
 ## 5.4 Model parameters
 
-In our final model, we will be using the stated parameter number as provided based on the initial hyperparameter experimentation and **further fine-tuning**.
+In our final model, we will be using the experimented numbers as initial direction and proceed with **further fine-tuning** on the model.
 
 **Layer 0**
 
