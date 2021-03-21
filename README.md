@@ -394,7 +394,27 @@ The results for loss and accuracy on the train and test set during training can 
 
 <u>**Adam vs AdamW empirical**</u>
 
+Log: results/experiments/tuning_layer_0_hyperparameters.log
+
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | -------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
+| 10     | 0.0001        | 0.1             | 0            | AdamW     | 0.9413   |
+
+From the table, we can see that with Adam optimizer, the accuracy is slightly higher than AdamW. However, this might be affected by the Dataloader random shuffle. Since the difference is small, we would pick Adam as the optimizer. 
+
 ### 5.3.2 Regularization - Weight Decay
+
+The weight decay parameter is use as a L2 regularization in the Adam optimizer. L2 regularization is used to alleviate overfitting of the model. 
+
+Log: results/experiments/tuning_layer_0_hyperparameters.log
+
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | -------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
+| 10     | 0.0001        | 0.1             | 0.01         | Adam      | 0.9400   |
+
+With all other hyperparameters equal, it is found that weight decay of 0 has a better accuracy than a weight decay of 0.01. One of the reason could be that there are still areas which the model could learn and the regularization slows down the convergences.
 
 ### 5.3.3 Learning rate
 
@@ -402,38 +422,29 @@ The results for loss and accuracy on the train and test set during training can 
 
 **<u>Experimenting with different learning rates</u>**
 
-To explore the effects of different learning rates, we have run the gridsearch experiments on 2 learning rates: 0.0001 (default), as well as 0.00001. We found that having a lower learning rate by a factor of 10 drastically decreases the final accuracy. One of the reason could be due to the slow convergence rate at learning rate of 0.00001. 
+Log: results/experiments/tuning_layer_0_hyperparameters.log
 
 Log file: layer_0_gridsearch.log
 
-| Epoch | Learning Rate | Gamma Value | L1 Lambda | Final Accuracy |
-| ----- | ------------- | ----------- | --------- | -------------- |
-| 10    | 0.0001        | 0.1         | 0.5       | 0.9431         |
-| 10    | 0.00001       | 0.1         | 0.5       | 0.8750         |
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | -------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
+| 10     | 0.00001       | 0.1             | 0            | Adam      | 0.8823   |
+
+From the experiment, we can see that reducing the learning rate by a factor of 10 drastically reduces the overall accuracy. One explanation could be that the reduced learning rate slows down the rate of convergence. This in turn reduces the accuracy of the model at the given epoch while having the same hyperparameters. For the final model, we will be using learning rate of 0.0001 for better results. 
 
 ### 5.3.4 Scheduled learning rate
 
-Under the GridSearch folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [0.1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
+Log: results/experiments/tuning_layer_0_hyperparameters.log
 
-The scheduled learning rate is effective in reducing the learning rate as the training progress and allowing the model to converge smoothly. The table below is the result of the varying gamma values, trained on layer L0 of the binary classifier model.
+Under the hyperparameter folder, we have experimented with the scheduled learning rate to gauge the effectiveness of implementing the scheduler. In the experiment, pytorch's StepLR was used with step size of 5 with variance of gamma of [0.1, 0.001] . The gamma determines the decay of the rate of the learning rate at after every predetermined step size. 
 
-Log file: layer_0_gridsearch.log
+| Epochs | Learning Rate | Scheduler Gamma | Weight Decay | Optimizer | Accuracy |
+| ------ | ------------- | --------------- | ------------ | --------- | -------- |
+| 10     | 0.0001        | 0.1             | 0            | Adam      | 0.9436   |
+| 10     | 0.0001        | 0.001           | 0            | Adam      | 0.9434   |
 
-| Epoch | Learning Rate | Gamma Value | L1 Lambda | Final Accuracy |
-| ----- | ------------- | ----------- | --------- | -------------- |
-| 10    | 0.0001        | 0.1         | 0.5       | 0.9431         |
-| 10    | 0.0001        | 0.001       | 0.5       | 0.9352         |
-
-From the table, we can see that the the final accuracy of the model with gamma value of 0.001 is lower than the model with gamma value of 0.1. This could be due to the fact that the model converges slower at a lower learning rate. 
-
-**5.3.5 L1 Regularization - Lambda**
-
-| Epoch | Learning Rate | Gamma Value | L1 Lambda | Final Accuracy |
-| ----- | ------------- | ----------- | --------- | -------------- |
-| 10    | 0.0001        | 0.1         | 0.5       | 0.9431         |
-| 10    | 0.0001        | 0.1         | 0.01      | 0.9387         |
-
-L1 regularization is helps in feature selection by eliminating features that are not important and is helpful when the number of feature points are large in number. In the table, we can  see that a higher lambda of 0.5 has a higher final accuracy as compared to a lambda of 0.01. This could be are result of the L1 regularization removing trivial features. 
+From the table, we can see that there are hardly noticeable change in the accuracy. This could due to the low epoch count that makes the difference inconsequential. As such, we will not be using scheduler for the final model. 
 
 ## 5.4 Model parameters
 
