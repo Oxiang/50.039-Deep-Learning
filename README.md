@@ -41,7 +41,33 @@ README.md # contains the overview of the project and explanations for the differ
 
 ## 3.1 Training the final model
 
+To train the final model from scratch, simply follow the steps provided below:
+
+Step 1. Move to the folder
+
+```shell
+cd notebooks/colab/final
+```
+
+Step 2. Open binary_classifier_model.ipynb in Jupyter Notebook
+
+Step 3. Run every cells **EXCEPT** for category 8.2.1
+
 ## 3.2 Loading and testing the trained model
+
+The pre-trained weights are stored in the same folder as the final model. Follow the steps to recreate the testing model.
+
+Step 1. Move to the folder
+
+```shell
+cd notebooks/colab/final
+```
+
+Step 2. Open binary_classifier_model.ipynb in Jupyter Notebook
+
+Step 3. Run every cells **EXCEPT** for category 8.1.1, 8.2.1, 9.1 and 9.2
+
+
 
 # 4. Data analysis <a name="DA"></a>
 
