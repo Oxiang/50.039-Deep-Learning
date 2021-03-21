@@ -855,11 +855,9 @@ Considering that the feature maps was created based on the first convolution lay
 
 # 8. Challenges of predictions <a name="CHALLENGE"></a>
 
-## 8.1 Differentiating covid and non-covid
+## 8.1 Why is it more difficult to differentiate between non-covid and covid x-rays, rather than between normal x-rays and infected (both covid and non-covid) people x-rays
 
-One of the toughest problem for differentiating COVID vs non-COVID was to determine the best architecture to use for this classification task. In this case, we had to choose either the 3-class classification or the binary classification approach. Besides the theoretical knowledge, it was not clear which model was best suited in this case. Since both are logical in terms of classifying, there was a need to conduct experiments to explore the advantages and disadvantages pertaining to each architecture. 
-
-On top of that, detecting abnormalities through X-rays images are hard even for well-trained clinicians.
+Intuitively infected lungs should have features that differentiate them from non-infected lungs. Clinicians would look out for tell-tale signs like the heart and diaphragm and inflammation. The model can also pick up on these features from the X-Ray and thus is able to differentiate them fairly accurately. However, differentiating covid from non covid infected lungs is much more challenging. This is even a problem for well-trained clinicians. If humans with many years of experience have trouble detecting it then machine learning models which mimic the human brain will also have difficulty.
 
 Reference link: [How accurate is chest imaging for diagnosing COVID-19?](https://www.cochrane.org/CD013639/INFECTN_how-accurate-chest-imaging-diagnosing-covid-19)
 
