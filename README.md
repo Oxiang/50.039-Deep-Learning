@@ -248,17 +248,6 @@ The results for loss and accuracy on the train and test set during training can 
 **Conclusion**
 
 The results without any tuning of parameters for both architectures are largely equal. It is interesting the that multi-class one predicts normal classes better and the 2 x binary one predicts Covid better. Predicting Covid well aligns more with the desired outcomes of the model. Based on our hypothesis of the proposed advantages of the 2 x binary model, we will proceed with it and propose and tune models that aim to improve on the baseline scores above.
-=======
-As the number of dataset is generally low, using the first architecture, 2 binary classifier, would allow us to tap onto complementary datasets to train each of the models. Furthermore, having two layers will allow the flexibility to tune individual hyperparameter to improve the overall accuracy for that specific model.
-
-On the hindsight, it is unclear if the architecture is truly the best option to take. With the complementary dataset, it would increase the classes ratio and increase the class imbalance. As such, we have done a exploratory analysis using both models and evaluating their effectiveness. 
-
-From our findings, we found that the 3 class classifier did not perform as well as the binary class with a simple models. After 10 epochs, it garner a test accuracy of 0.6688 and low recall scores. Thus, we decide to approach the problem with the 2 binary classifier approach.
-
-Log: results/experiments/simple_multiclass_net.txt
->>>>>>> 24c5d2d... docs: updated hyperparameter choice
-
-Experimental model notebook: notebooks/experiments/multiclass_classifier.ipynb
 
 ## 5.2 2 2 Binary classifiers architecture design
 
